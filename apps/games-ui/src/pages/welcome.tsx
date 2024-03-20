@@ -11,18 +11,34 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { useLoaderData } from 'react-router-dom'; //kick the worker off before actually loading page
-import { LiteGame } from '@jmcguinness/model';
 
-const PreLoaded = () => {
-  const games = useLoaderData() as Array<LiteGame>;
+import { Button, Container } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+
+function Welcome() {
+  const nav = useNavigate();
+
   return (
-    <ul>
-      {games.map((g) => (
-        <li>{g.name}</li>
-      ))}
-    </ul>
+    <Container
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        flexDirection: 'column',
+      }}
+    >
+      <h1>SHALL WE...</h1>
+      <Button
+        style={{
+          margin: '10px',
+          fontWeight: '550',
+        }}
+        variant="contained"
+        onClick={() => nav('/games')}
+      >
+        Play a Game
+      </Button>
+    </Container>
   );
-};
+}
 
-export default PreLoaded;
+export default Welcome;

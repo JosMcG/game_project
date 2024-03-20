@@ -12,16 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 import { Router, Request, Response } from 'express';
-import { Game } from '@jmcguinness/model';
-import { ChutesAndLadders } from '@jmcguinness/model';
+import {
+  liteChutesAndLadders,
+  Game,
+  liteHangMan,
+  playChutesAndLadders,
+} from '@jmcguinness/model';
+import { addTimedSession, reaper } from './gameUtils';
 
-const gameList = [ChutesAndLadders];
+const gameList = [liteChutesAndLadders, liteHangMan];
+const playableGames = new Map<string, Game>();
+const timedSessions = new Map<number, Array<string>>();
 
 const games = (req: Request, resp: Response) => {
   setTimeout(() => {
     resp.json(gameList);
     resp.status(200);
-  }, 3000);
+  }, 0);
 };
 
 const selectedGame = (req: Request, resp: Response) => {
@@ -30,9 +37,29 @@ const selectedGame = (req: Request, resp: Response) => {
   resp.json(game);
 };
 
+const notQuitePlayableGame = (req: Request, resp: Response) => {
+  const selectedGame = req.params.id;
+  if (selectedGame === 'Chutes-and-Ladders') {
+    const game = playChutesAndLadders as Game;
+    playableGames.set(game.playId, game);
+    addTimedSession(timedSessions, game);
+    resp.json({
+      gameId: game.gameId,
+      playId: game.playId,
+      timeCreated: game.timeCreated,
+    });
+  }
+  if (selectedGame === 'Hang-Man') {
+    resp.status(404);
+  }
+};
+
+const intervalId = setInterval(reaper, 60000, timedSessions);
+
 export class GameRoutes {
   constructor(router: Router) {
     router.get('/games', games);
     router.get('/games/:id', selectedGame);
+    router.post('/games/:id', notQuitePlayableGame);
   }
 }

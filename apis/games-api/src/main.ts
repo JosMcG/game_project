@@ -15,6 +15,7 @@ const corsOptions = {
 const app = express();
 const router = express.Router();
 
+//TODO app.set functions???  && Read express docs!!
 app.use(
   '/assets',
   cors(corsOptions),

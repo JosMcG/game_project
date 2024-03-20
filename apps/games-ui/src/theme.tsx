@@ -11,18 +11,19 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { useLoaderData } from 'react-router-dom'; //kick the worker off before actually loading page
-import { LiteGame } from '@jmcguinness/model';
+import { ThemeOptions } from '@mui/material/styles';
 
-const PreLoaded = () => {
-  const games = useLoaderData() as Array<LiteGame>;
-  return (
-    <ul>
-      {games.map((g) => (
-        <li>{g.name}</li>
-      ))}
-    </ul>
-  );
+export const themeOptions: ThemeOptions = {
+  palette: {
+    mode: 'light',
+    primary: {
+      main: '#6ba3b3',
+    },
+    secondary: {
+      main: '#1c1e1f',
+    },
+    warning: {
+      main: '#b52419',
+    },
+  },
 };
-
-export default PreLoaded;

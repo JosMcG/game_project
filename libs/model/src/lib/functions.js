@@ -11,18 +11,12 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { useLoaderData } from 'react-router-dom'; //kick the worker off before actually loading page
-import { LiteGame } from '@jmcguinness/model';
-
-const PreLoaded = () => {
-  const games = useLoaderData() as Array<LiteGame>;
-  return (
-    <ul>
-      {games.map((g) => (
-        <li>{g.name}</li>
-      ))}
-    </ul>
-  );
+export const generateRandomNumber = (upperBound) => {
+  return Math.floor(Math.random() * upperBound) + 1;
 };
 
-export default PreLoaded;
+export const generateRandomNumInRange = (min, max) => {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1) + min);
+};

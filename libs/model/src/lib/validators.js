@@ -11,18 +11,24 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { useLoaderData } from 'react-router-dom'; //kick the worker off before actually loading page
-import { LiteGame } from '@jmcguinness/model';
+import { SpaceType } from './space.js';
 
-const PreLoaded = () => {
-  const games = useLoaderData() as Array<LiteGame>;
+export function validateSpace(space) {
   return (
-    <ul>
-      {games.map((g) => (
-        <li>{g.name}</li>
-      ))}
-    </ul>
+    space.type == SpaceType.START ||
+    space.type == SpaceType.NORMAL ||
+    space.type == SpaceType.END
   );
-};
+}
 
-export default PreLoaded;
+export function validateStartSpace(space) {
+  return space.next != null && space.previous == null;
+}
+
+export function validateNormalSpace(space) {
+  return space.next != null && space.previous != null;
+}
+
+export function validateEndSpace(space) {
+  return space.next == null && space.previous != null;
+}

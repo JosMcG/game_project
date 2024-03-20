@@ -1,3 +1,6 @@
+import { v4 as uuidv4 } from 'uuid';
+import { ChutesAndLadders } from './playable_chutes_and_ladders';
+
 export interface Rule {
   order: number;
   title?: string;
@@ -32,7 +35,7 @@ export class RuleBuilder {
 //  return { order: order, value: value, title: title } as Rule;
 //};
 
-export interface Game {
+export interface LiteGame {
   id: string;
   name: string;
   description: string;
@@ -40,32 +43,32 @@ export interface Game {
   rules: Array<Rule>;
 }
 
-export class GameBuilder {
-  private game: Game;
+export class LiteGameBuilder {
+  private game: LiteGame;
   constructor() {
-    this.game = { rules: new Array<Rule>() } as Game;
+    this.game = { rules: new Array<Rule>() } as LiteGame;
   }
-  setId(id: string): GameBuilder {
+  setId(id: string): LiteGameBuilder {
     this.game.id = id;
     return this;
   }
 
-  setName(name: string): GameBuilder {
+  setName(name: string): LiteGameBuilder {
     this.game.name = name;
     return this;
   }
 
-  setDescription(description: string): GameBuilder {
+  setDescription(description: string): LiteGameBuilder {
     this.game.description = description;
     return this;
   }
 
-  setImageURL(imageURL: string): GameBuilder {
+  setImageURL(imageURL: string): LiteGameBuilder {
     this.game.imageURL = imageURL;
     return this;
   }
 
-  addRule(title: string, value: string): GameBuilder {
+  addRule(title: string, value: string): LiteGameBuilder {
     this.game.rules.push(
       new RuleBuilder()
         .setTitle(title)
@@ -76,9 +79,131 @@ export class GameBuilder {
     return this;
   }
 
-  buildGame(): Game {
+  buildGame(): LiteGame {
     const theGame = Object.assign({}, this.game);
-    this.game = {} as Game;
+    this.game = {} as LiteGame;
     return theGame;
   }
 }
+
+export interface Game {
+  gameId: string;
+  playId: string;
+  timeCreated: number;
+  lastModTime: Date;
+  instance: any;
+  actions: Map<string, (() => string) | undefined>; //use a reducer to evaluate string when it comes back
+}
+
+export class GameBuilder {
+  private playableGame: Game;
+  constructor() {
+    this.playableGame = {
+      playId: uuidv4(),
+      timeCreated: Math.round(Date.now() / 60000) * 60000,
+      actions: new Map<string, () => string>(), //TODO look at this
+    } as Game;
+  }
+  setGameId(id: string): GameBuilder {
+    this.playableGame.gameId = id;
+    return this;
+  }
+  setLastModTime(time: Date): GameBuilder {
+    this.playableGame.lastModTime = time;
+    return this;
+  }
+  setInstance(game: object): GameBuilder {
+    this.playableGame.instance = game;
+    return this;
+  }
+  addAction(title: string, value: string): GameBuilder {
+    //TODO look at this to work with the method - is this where the reducer comes into play?
+    this.playableGame.actions.set(title, this.playableGame.instance[value]);
+    return this;
+  }
+  //Do I need to create an object with many objects or just return one game instance?
+  buildPlayableGame(): Game {
+    const thePlayableGame = Object.assign({}, this.playableGame);
+    this.playableGame = {} as Game;
+    return thePlayableGame;
+  }
+}
+
+/*export interface Action {
+  title: string;
+  value: () => string; //use a reducer to evaluate string when it comes back
+}
+
+export class ActionBuilder {
+  private action: Action;
+  constructor() {
+    this.action = {} as Action;
+  }
+
+  setTitle(title: string): ActionBuilder {
+    this.action.title = title;
+    return this;
+  }
+  setValue(value: () => string): ActionBuilder {
+    this.action.value = value;
+    return this;
+  }
+  buildAction(): Action {
+    const theAction = Object.assign({}, this.action);
+    this.action = {} as Action;
+    return theAction;
+  }
+}
+
+export interface PlayableGame {
+  gameId: string;
+  playId: string;
+  timeCreated: Date;
+  lastModTime: Date;
+  instance: any;
+  actions: Array<Action>;
+}
+
+export class PlayableGameBuilder {
+  private playableGame: PlayableGame;
+  constructor() {
+    this.playableGame = {
+      actions: new Array<Action>(),
+    } as PlayableGame;
+  }
+  setGameId(id: string): PlayableGameBuilder {
+    this.playableGame.gameId = id;
+    return this;
+  }
+  setPlayId(): PlayableGameBuilder {
+    this.playableGame.playId = uuidv4();
+    return this;
+  }
+  setTimeCreated(): PlayableGameBuilder {
+    this.playableGame.timeCreated = new Date(Date.now());
+    return this;
+  }
+  setLastModTime(time: Date): PlayableGameBuilder {
+    this.playableGame.lastModTime = time;
+    return this;
+  }
+  setInstance(game: object): PlayableGameBuilder {
+    this.playableGame.instance = game;
+    return this;
+  }
+  /*addAction(title: string, value: () => string): PlayableGameBuilder {
+    this.playableGame.actions.push(title, value);
+    return this;
+  }
+  addAction(title: string, value: () => string): PlayableGameBuilder {
+    this.playableGame.actions.push(
+      new ActionBuilder().setTitle(title).setValue(value).buildAction()
+    );
+    return this;
+  }
+  buildPlayableGame(): PlayableGame {
+    const thePlayableGame = Object.assign({}, this.playableGame);
+    this.playableGame = {} as PlayableGame;
+    return thePlayableGame;
+  }
+}*/

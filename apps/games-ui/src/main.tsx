@@ -1,37 +1,43 @@
 import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-
 import App from './app/app';
-import Waiting from './components/waiting';
-import PreLoaded from './pages/pre_loaded';
-import { getGameList, getGameDetails } from './services/game_service';
-import GameDetails from './components/game_details';
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+  <StrictMode>
+    <App />
+  </StrictMode>
 );
 
-const router = createBrowserRouter([
+/*const router = createBrowserRouter([
   {
     path: '/',
     Component: App,
     children: [
       {
-        path: 'loader',
-        Component: PreLoaded,
-        loader: getGameList,
+        index: true,
+        Component: Welcome,
       },
       {
-        path: '/games/:id',
-        Component: GameDetails,
+        path: 'games',
+        Component: Outlet,
+        children: [
+          {
+            index: true, //do not need a path with index
+            Component: GameList,
+            loader: getGameList,
+          },
+          {
+            path: ':id',
+            Component: GameDetails,
+            loader: ({ params }) => getGameDetails(params.id),
+            action: getPlayId,
+          },
+          {
+            path: 'register',
+            Component: RegisterPlayer,
+          },
+        ],
       },
     ],
   },
-]);
-
-root.render(
-  <StrictMode>
-    <RouterProvider router={router} fallbackElement={<Waiting />} />
-  </StrictMode>
-);
+]);*/

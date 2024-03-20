@@ -11,18 +11,17 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { useLoaderData } from 'react-router-dom'; //kick the worker off before actually loading page
-import { LiteGame } from '@jmcguinness/model';
+import { LiteGameBuilder } from './model';
 
-const PreLoaded = () => {
-  const games = useLoaderData() as Array<LiteGame>;
-  return (
-    <ul>
-      {games.map((g) => (
-        <li>{g.name}</li>
-      ))}
-    </ul>
-  );
-};
-
-export default PreLoaded;
+export const liteHangMan = new LiteGameBuilder()
+  .setId('Hang-Man')
+  .setName('Hang Man')
+  .setDescription('Guess the word before you are hung!')
+  .setImageURL('/public/hangman-gameImg.png')
+  .addRule(
+    'Guess a letter.',
+    'If you are correct, the letter is placed in the correct position. \
+	If you are incorrect, a body part gets hung.'
+  )
+  .addRule('Game end.', 'Try to guess the word before you meet your demise.')
+  .buildGame();

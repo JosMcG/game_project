@@ -12,17 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 import { setEnvironmentData } from 'worker_threads';
-import { GameBuilder, RuleBuilder } from './model';
+import { LiteGameBuilder, GameBuilder } from './model';
+import { ChutesAndLadders } from './playable_chutes_and_ladders';
 
-export const ChutesAndLadders = new GameBuilder()
-  .setId('0')
+export const liteChutesAndLadders = new LiteGameBuilder()
+  .setId('Chutes-and-Ladders')
   .setName('Chutes and Ladders')
   .setDescription(
     'Climb up ladders, and slide down shoots. See who gets to space 100 first!'
   )
-  .setImageURL(
-    'https://timbuktoys.com/cdn/shop/products/wnmv1195_500x.jpg?v=1645818069'
-  )
+  .setImageURL('/public/chute&ladderImg2.png')
   .addRule('Number of Players', 'For 2-4 Players, Ages 3+')
   .addRule(
     'Register Players',
@@ -42,3 +41,15 @@ export const ChutesAndLadders = new GameBuilder()
   The first pawn to reach space 100 wins the game.'
   )
   .buildGame();
+
+export const playChutesAndLadders = new GameBuilder()
+  .setGameId('Chutes-and-Ladders')
+  .setLastModTime(new Date(Date.now()))
+  .setInstance(new ChutesAndLadders())
+  .addAction('Get Row Length', 'getRowLength')
+  .addAction('Reset Board', 'resetBoard')
+  .addAction('Register Player', 'registerPlayer')
+  .addAction('Choose Avatar', 'setAvatar')
+  .addAction('Set Up Game', 'setUpGame')
+  .addAction('Verify Game', 'verifySetUp')
+  .buildPlayableGame();

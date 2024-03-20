@@ -11,18 +11,29 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { useLoaderData } from 'react-router-dom'; //kick the worker off before actually loading page
-import { LiteGame } from '@jmcguinness/model';
+import { Toolbar, Typography } from '@mui/material';
+import CopyrightIcon from '@mui/icons-material/Copyright';
 
-const PreLoaded = () => {
-  const games = useLoaderData() as Array<LiteGame>;
+const Footer = () => {
   return (
-    <ul>
-      {games.map((g) => (
-        <li>{g.name}</li>
-      ))}
-    </ul>
+    <Toolbar
+      component={'footer'}
+      style={{
+        position: 'static',
+        backgroundColor: '#fc9803',
+        height: '8vh',
+      }}
+    >
+      <Typography variant="overline" color="secondary">
+        <CopyrightIcon
+          fontSize="small"
+          color="secondary"
+          sx={{ mb: -0.7, mr: 0.5 }}
+        />
+        2023 &nbsp;&nbsp;Josilyn McGuinness
+      </Typography>
+    </Toolbar>
   );
 };
 
-export default PreLoaded;
+export default Footer;
