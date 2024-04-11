@@ -27,9 +27,12 @@ export const reaper = (timedSessions) => {
 };
 
 export const addTimedSession = (timedSessions, game) => {
-  if (timedSessions.has(game.timeCreated)) {
-    timedSessions.get(game.timeCreated).push(game.playId);
-  } else {
+  if (!timedSessions.has(game.timeCreated)) {
     timedSessions.set(game.timeCreated, [game.playId]);
+  } else if (
+    timedSessions.has(game.timeCreated) &&
+    !timedSessions.get(game.timeCreated).includes(game.playId)
+  ) {
+    timedSessions.get(game.timeCreated).push(game.playId);
   }
 };

@@ -11,9 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { setEnvironmentData } from 'worker_threads';
 import { LiteGameBuilder, GameBuilder } from './model';
-import { ChutesAndLadders } from './playable_chutes_and_ladders';
+import { ChutesAndLadders } from './chutes_and_ladders/playable_chutes_and_ladders';
 
 export const liteChutesAndLadders = new LiteGameBuilder()
   .setId('Chutes-and-Ladders')
@@ -21,7 +20,7 @@ export const liteChutesAndLadders = new LiteGameBuilder()
   .setDescription(
     'Climb up ladders, and slide down shoots. See who gets to space 100 first!'
   )
-  .setImageURL('/public/chute&ladderImg2.png')
+  .setImageURL('/public/chute&ladderImg3.png')
   .addRule('Number of Players', 'For 2-4 Players, Ages 3+')
   .addRule(
     'Register Players',

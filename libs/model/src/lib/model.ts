@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { ChutesAndLadders } from './playable_chutes_and_ladders';
+import { ChutesAndLadders } from './chutes_and_ladders/playable_chutes_and_ladders';
 
 export interface Rule {
   order: number;

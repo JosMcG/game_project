@@ -11,12 +11,13 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { SpaceType } from './space.js';
+import { SpaceType } from './space';
 
 export class Board {
   constructor(startSpace, numSpaces, specialSpaces, createSpace) {
     this.end = specialSpaces[numSpaces];
     this.start = startSpace;
+    this.specials = specialSpaces;
     let curSpace = startSpace;
     let nextSpace;
     for (let n = 2; n <= numSpaces; n++) {

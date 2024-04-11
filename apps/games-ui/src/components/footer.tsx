@@ -21,7 +21,7 @@ const Footer = () => {
       style={{
         position: 'static',
         backgroundColor: '#fc9803',
-        height: '8vh',
+        height: '5vh',
       }}
     >
       <Typography variant="overline" color="secondary">

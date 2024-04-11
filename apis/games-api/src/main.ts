@@ -21,6 +21,8 @@ app.use(
   cors(corsOptions),
   express.static(path.join(__dirname, 'assets'))
 );
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use('/api/v1', cors(corsOptions), router);
 new GameRoutes(router);
 //new Player(router);

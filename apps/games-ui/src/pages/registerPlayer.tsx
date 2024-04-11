@@ -10,32 +10,73 @@
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
+// limitations under the License.
 
 import { Game } from '@jmcguinness/model';
-import { Container } from '@mui/material';
-import { Form } from 'react-router-dom';
+import { Button, Container, TextField } from '@mui/material';
+import { useFormik } from 'formik';
+import { useLoaderData, useSubmit } from 'react-router-dom';
+import * as Yup from 'yup';
 
-// limitations under the License.
-function RegisterPlayer() {
-  const data = localStorage.getItem('actionData');
-  let idValue = 'No Game Found';
-  let name = '';
-  if (data) {
-    const d: Game = JSON.parse(data);
-    name = d.gameId;
-    idValue = d.playId;
-  }
+type RegisterForm = {
+  name: string;
+  playId: string;
+  gameId: string;
+};
 
+const RegisterPlayer = () => {
+  const submit = useSubmit();
+  const data = useLoaderData() as Game;
+  const formik = useFormik<RegisterForm>({
+    initialValues: {
+      name: '',
+      playId: data.playId,
+      gameId: data.gameId,
+    },
+    validationSchema: Yup.object({
+      name: Yup.string()
+        .max(20, 'Must be 20 characters or less')
+        .required('Required'),
+    }),
+    onSubmit: async (values) => {
+      submit(values, { method: 'put' });
+    },
+  });
+  //console.log(formik.errors);
   return (
     <Container>
-      <h3>Your {name} game id is: </h3>
-      <h4>{idValue}</h4>
-      <h4>Please register and invite the other players. </h4>
-      <Form>
-        <input type="text" id="name" name="name" value="Player Name" />
-      </Form>
+      <h2>Please Register to Play {formik.values.gameId} </h2>
+      <form onSubmit={formik.handleSubmit}>
+        <TextField
+          id="name"
+          name="name"
+          placeholder="Player Name"
+          onChange={formik.handleChange}
+          value={formik.values.name}
+          style={{
+            margin: '10px',
+            fontWeight: '550',
+            display: 'block',
+            width: '325px',
+          }}
+          /*error={formik.errors.name !== undefined}*/
+          /*helperText={formik.touched.name ? formik.errors.name : ''}*/
+        />
+
+        <Button
+          type="submit"
+          style={{
+            margin: '10px',
+            fontWeight: '550',
+            color: '#2e3030',
+          }} //TODO - figure out how to use form actions to navigate to details
+          variant="contained"
+        >
+          Register
+        </Button>
+      </form>
     </Container>
   );
-}
+};
 
 export default RegisterPlayer;

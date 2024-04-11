@@ -21,73 +21,56 @@ export class SpaceType {
 Object.freeze(SpaceType); //Do not want SpaceType variables to be changed
 
 export class Space {
-  #Value; //number of space
-  #Type; //specifies if it is a normal, ladder, chute, or winning space
-  #Next; //Space object for the next space when traversing the board
-  #Previous; //Space object for previous space when traversing the board
-  #Special; //Space object (if using linked list) or number (if using array) for the destination of a type ladder or chute
-  #Avatars; //array of avatars
+  value; //number of space
+  type; //specifies if it is a normal, ladder, chute, or winning space
+  next; //Space object for the next space when traversing the board
+  previous; //Space object for previous space when traversing the board
+  special; //Space object (if using linked list) or number (if using array) for the destination of a type ladder or chute
+  avatars; //array of avatars
 
   constructor(value, type) {
-    this.#Value = value;
-    this.#Type = type;
-    this.#Next = null; //This will be a Space object
-    this.#Previous = null; //This will be a Space object
-    this.#Special = null; //This will be a Space object
-    this.#Avatars = [];
+    this.value = value;
+    this.type = type;
+    this.next = null; //This will be a Space object
+    this.previous = null; //This will be a Space object
+    this.special = null; //This will be a Space object
+    this.avatars = [];
   }
 
-  //get the space number
-  get value() {
-    return this.#Value;
-  }
+  //May need to look at this for refactoring
+  // //Can be start, normal, chute, ladder, or winning
+  // set type(spaceType) {
+  //   this.type = spaceType;
+  // }
 
-  get type() {
-    return this.#Type;
-  }
+  // get previous() {
+  //   return this.#previous;
+  // }
 
-  //Can be start, normal, chute, ladder, or winning
-  set type(spaceType) {
-    this.#Type = spaceType;
-  }
+  // //Sets back to a space object, pointing to the previous space
+  // set previous(previousSpace) {
+  //   this.#previous = previousSpace;
+  // }
 
-  get next() {
-    return this.#Next;
-  }
+  // get special() {
+  //   return this.special;
+  // }
 
-  //Sets next to a space object, pointing to next space
-  set next(nextSpace) {
-    this.#Next = nextSpace;
-  }
-
-  get previous() {
-    return this.#Previous;
-  }
-
-  //Sets back to a space object, pointing to the previous space
-  set previous(previousSpace) {
-    this.#Previous = previousSpace;
-  }
-
-  get special() {
-    return this.#Special;
-  }
-
-  //Sets special to a space object
-  set special(space) {
-    this.#Special = space;
-  }
+  // //Sets special to a space object
+  // set special(space) {
+  //   this.special = space;
+  // }
 
   get occupied() {
-    return this.#Avatars.length > 0;
+    return this.avatars.length > 0;
   }
 
-  set avatars(a) {
-    this.#Avatars.push(a);
+  addAvatars(a) {
+    this.avatars.push(a);
   }
 
   leave() {
-    this.#Avatars.pop();
+    this.avatars.pop();
   }
 
   //Takes the avatar interacting with the space, and sets its location to the space it occupies
@@ -101,15 +84,15 @@ export class Space {
     //move the first occupying avatar one space, then place other avatar on the space
     if (this.occupied && this.type != SpaceType.START) {
       console.log('Someone is already here');
-      this.#Avatars[this.#Avatars.length - 1].move(1); //Is it okay to assume only one avatar in array?
+      this.avatars[this.avatars.length - 1].move(1); //Is it okay to assume only one avatar in array?
     }
     //If avatar lands on a chute or ladder space, move it accordingly
-    if (this.#Special) {
-      avatar.location = this.#Special;
-      this.#Special.avatars = avatar;
+    if (this.special) {
+      avatar.location = this.special;
+      this.special.addAvatars(avatar);
       //Land on a normal space
     } else {
-      this.avatars = avatar;
+      this.addAvatars(avatar);
       avatar.location = this;
     }
     return gameOver;

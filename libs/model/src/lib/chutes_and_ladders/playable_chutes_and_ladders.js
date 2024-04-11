@@ -118,7 +118,7 @@ export class ChutesAndLadders {
   die = new Die(6);
 
   constructor() {
-    this.startSpace = new Space(1, SpaceType.START);
+    this.startSpace = new Space('1', SpaceType.START);
     this.specialSpaces = createSpecials(NUM_CHUTES, NUM_LADDERS); //put #chutes and ladders here and eliminate the this. values
     this.board = new Board(
       this.startSpace,
