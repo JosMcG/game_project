@@ -14,16 +14,17 @@
 
 //enum for type of space
 export class Color {
-  static RED = 1;
-  static YELLOW = 2;
-  static GREEN = 3;
-  static BLUE = 4;
-  static PURPLE = 5;
+  static RED = 'red';
+  static YELLOW = 'yellow';
+  static GREEN = 'green';
+  static BLUE = 'blue';
+  static PURPLE = 'purple';
 }
 Object.freeze(Color); //Do not want Color variables to be changed
 
 export class Avatar {
   location;
+  active = false; //Do I need this????
 
   constructor(Color) {
     this.color = Color;

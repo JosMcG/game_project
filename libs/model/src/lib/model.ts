@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { ChutesAndLadders } from './chutes_and_ladders/playable_chutes_and_ladders';
+import { Context } from '@jmcguinness/chain';
 
 export interface Rule {
   order: number;
@@ -116,16 +117,14 @@ export class GameBuilder {
     this.playableGame.instance = game;
     return this;
   }
-  addAction(title: string, value: string): GameBuilder {
-    //TODO look at this to work with the method - is this where the reducer comes into play?
-    this.playableGame.actions.set(title, this.playableGame.instance[value]);
-    return this;
+  addAction(arr: Array<Context>) {
+    //TODO look at this to work with the method
   }
   //Do I need to create an object with many objects or just return one game instance?
   buildPlayableGame(): Game {
-    const thePlayableGame = Object.assign({}, this.playableGame);
+    const playableGame = Object.assign({}, this.playableGame);
     this.playableGame = {} as Game;
-    return thePlayableGame;
+    return playableGame;
   }
 }
 

@@ -15,7 +15,9 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@jmcguinness/model": ["libs/model/src/index.ts"]
+      "@jmcguinness/model": ["libs/model/src/index.ts"],
+      "@jmcguinness/chain": ["libs/chain/src/index.ts"],
+      "@jmcguinness/base": ["libs/chain/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

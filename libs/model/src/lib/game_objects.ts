@@ -11,7 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { LiteGameBuilder, GameBuilder } from './model';
+
+import { LiteGameBuilder, GameBuilder, Game } from './model';
 import { ChutesAndLadders } from './chutes_and_ladders/playable_chutes_and_ladders';
 
 export const liteChutesAndLadders = new LiteGameBuilder()
@@ -41,14 +42,24 @@ export const liteChutesAndLadders = new LiteGameBuilder()
   )
   .buildGame();
 
+// type Payload = {
+//   action: string;
+//   game: Game;
+//   req: Request;
+//   resp: Response;
+// };
+
+// const getPayloadFromContext = (context: Context): Payload => {
+//   const action = context.get('action') as string;
+//   const game = context.get('game') as Game;
+//   const req = context.get('req') as Request;
+//   const resp = context.get('resp') as Response;
+//   return { action: action, game: game, req: req, resp: resp } as Payload;
+// };
+
 export const playChutesAndLadders = new GameBuilder()
   .setGameId('Chutes-and-Ladders')
   .setLastModTime(new Date(Date.now()))
   .setInstance(new ChutesAndLadders())
-  .addAction('Get Row Length', 'getRowLength')
-  .addAction('Reset Board', 'resetBoard')
-  .addAction('Register Player', 'registerPlayer')
-  .addAction('Choose Avatar', 'setAvatar')
-  .addAction('Set Up Game', 'setUpGame')
-  .addAction('Verify Game', 'verifySetUp')
+  //.addAction([])
   .buildPlayableGame();

@@ -112,10 +112,12 @@ export const pawn = (color) => {
 
 export class ChutesAndLadders {
   players = []; //an array of player objects
-  selectedAvatars = [];
+  availableAvatarColors = ['red', 'yellow', 'green', 'blue', 'purple'];
   firstPlayer = undefined; //for linked list of players
   //order = []; //an array of players in the order they should play -> changed to linking the players in order
   die = new Die(6);
+  boardDisplayInfo = [];
+  activePlayer = null;
 
   constructor() {
     this.startSpace = new Space('1', SpaceType.START);
@@ -144,22 +146,28 @@ export class ChutesAndLadders {
   }
 
   //Returns true if more players can register
-  registerPlayer(player) {
-    this.players.push(new Player(player));
+  registerPlayer(name) {
+    const player = new Player(name);
+    this.players.push(player);
     if (this.players.length == 1) {
       this.firstPlayer = this.players[0];
+      this.activePlayer = player;
     }
-    let canAddPlayer = player.length < MAX_PLAYERS ? true : false; //not sure if I will use a bool or just check number
-    return canAddPlayer;
+    // let canAddPlayer = player.length < MAX_PLAYERS ? true : false; //not sure if I will use a bool or just check number
+    // return canAddPlayer;
   }
 
   setAvatar(player, avatar) {
-    if (!this.selectedAvatars.includes(avatar)) {
+    if (this.availableAvatarColors.includes(avatar.color)) {
       avatar.location = this.startSpace;
       player.selectAvatar(avatar);
-      this.selectedAvatars.push(player.avatar);
-    }
+      this.availableAvatarColors = this.availableAvatarColors.filter(
+        (c) => c != avatar.color
+      );
+      this.activePlayer = player.next;
+    } else console.log('Color not available.'); //TODO add error checking
   }
+
   setUpGame() {
     if (this.players.length < MIN_PLAYERS) {
       console.log('Need more players.'); //redirect to invite players
@@ -178,6 +186,25 @@ export class ChutesAndLadders {
       }
     });
     return ready;
+  }
+
+  //TODO - make sure avatar and player do not cause circular reference!!!
+  getInfoToDisplayBoard() {
+    let cur = this.board.end;
+    for (let i = this.board.start.value; i <= this.board.end.value; i++) {
+      this.boardDisplayInfo.push({
+        spaceNum: cur.value,
+        spaceType: cur.type,
+        special: cur.special ? cur.special.value : 0,
+        avatar: cur.avatars,
+        players: cur.players,
+        activePlayer: this.activePlayer,
+      });
+      if (cur.value > 1) {
+        cur = cur.previous;
+      }
+    }
+    return this.boardDisplayInfo;
   }
 }
 //module.exports = PlayableChutesAndLadders;

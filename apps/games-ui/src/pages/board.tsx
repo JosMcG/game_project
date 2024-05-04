@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Box, Grid } from '@mui/material';
 import { useLoaderData } from 'react-router-dom';
 
 const Board = () => {
@@ -35,29 +34,38 @@ const Board = () => {
   }
 
   const showBoard = displaySpaces.map((space) => (
-    <Grid item xs={1.2} key={space.spaceNum}>
-      <Box
-        height={100}
-        width={100}
-        sx={{ border: '2px solid black', backgroundColor: '#B7F6B6' }}
-      >
-        {space.spaceNum}
-        {space.spaceType === 3 ? (
-          <p>Chute to {space.special}</p>
-        ) : space.spaceType === 4 ? (
-          <p>Ladder to {space.special}</p>
-        ) : null}
-        {space.avatar.length > 0
-          ? space.avatar.forEach((a: string) => <p>{a}</p>) //TODO check on what avatar actually is
-          : null}
-      </Box>
-    </Grid>
+    <div
+      key={space.spaceNum}
+      style={{
+        border: '2px solid black',
+        backgroundColor: '#B7F6B6',
+        height: '100px',
+        width: '100px',
+      }}
+    >
+      {space.spaceNum}
+      {space.spaceType === 3 ? (
+        <p>Chute to {space.special}</p>
+      ) : space.spaceType === 4 ? (
+        <p>Ladder to {space.special}</p>
+      ) : null}
+      {space.avatar.length > 0
+        ? space.avatar.forEach((a: string) => <p>{a}</p>) //TODO check on what avatar actually is
+        : null}
+    </div>
   ));
 
   return (
-    <Grid container width={1000} margin={'auto auto 25px auto'}>
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr',
+        margin: 'auto auto 25px auto',
+        width: '1000px',
+      }}
+    >
       {showBoard}
-    </Grid>
+    </div>
   );
 };
 

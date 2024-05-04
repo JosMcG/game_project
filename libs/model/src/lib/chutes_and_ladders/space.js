@@ -37,30 +37,6 @@ export class Space {
     this.avatars = [];
   }
 
-  //May need to look at this for refactoring
-  // //Can be start, normal, chute, ladder, or winning
-  // set type(spaceType) {
-  //   this.type = spaceType;
-  // }
-
-  // get previous() {
-  //   return this.#previous;
-  // }
-
-  // //Sets back to a space object, pointing to the previous space
-  // set previous(previousSpace) {
-  //   this.#previous = previousSpace;
-  // }
-
-  // get special() {
-  //   return this.special;
-  // }
-
-  // //Sets special to a space object
-  // set special(space) {
-  //   this.special = space;
-  // }
-
   get occupied() {
     return this.avatars.length > 0;
   }

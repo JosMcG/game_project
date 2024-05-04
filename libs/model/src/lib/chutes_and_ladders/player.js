@@ -18,7 +18,13 @@ export class Player {
     this.name = name;
     this.avatar = undefined;
     this.next = null;
+    this.initialRoll = null;
   }
+
+  initialDiceRoll = (die) => {
+    this.initialRoll = die.roll();
+    return this.initialRoll;
+  };
 
   selectAvatar(avatar) {
     this.avatar = avatar;
@@ -39,12 +45,11 @@ export class PlayerOrder {
   //determines order of players, handling the same number being rolled by multiple players at any stage of the roll-off
   //and inserting them in appropriate order at the appropriate place
   playerOrder(players) {
-    let order = {}; //stores the rolled number and player(s) that rolled it
-    let holdOrder = []; //stores an array of players that rolled the same number
-    let die = new Die(6);
+    let order = {}; //stores rolledNum: [] of "player(s)" that rolled it
+    let holdOrder = []; //stores an array of number rolled by multiple players
     let rolledNum;
     players.forEach((p) => {
-      rolledNum = die.roll();
+      rolledNum = p.initialRoll;
       Object.keys(order).includes(rolledNum.toString())
         ? order[rolledNum].push(p)
         : (order[rolledNum] = [p]);

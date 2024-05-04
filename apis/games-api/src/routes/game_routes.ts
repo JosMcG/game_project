@@ -25,6 +25,9 @@ const gameList = [liteChutesAndLadders, liteHangMan];
 const playableGames = new Map<string, Game>();
 const timedSessions = new Map<number, Array<string>>();
 
+function getPlayableGame(playId) {
+  return playableGames.get(playId);
+}
 const games = (req: Request, resp: Response) => {
   setTimeout(() => {
     resp.json(gameList);
@@ -59,34 +62,13 @@ const registerPlayer = (req: Request, resp: Response) => {
   const data = req.body;
   const playerName = data.playerName;
   if (data.playId) {
-    const game = playableGames.get(data.playId);
+    const game = getPlayableGame(data.playId);
     game.instance.registerPlayer(playerName);
-    //console.log(game.instance.players);
-    const spaces = [];
-    let cur = game.instance.board.end;
-    for (
-      let i = game.instance.board.start.value;
-      i <= game.instance.board.end.value;
-      i++
-    ) {
-      spaces.push({
-        spaceNum: cur.value,
-        spaceType: cur.type,
-        special: cur.special ? cur.special.value : 0,
-        avatar: cur.avatars,
-      });
-      if (cur.value > 1) {
-        cur = cur.previous;
-      }
-    }
     console.log(game.instance.players);
-    for (let i = 0; i < spaces.length; i++) {
-      console.log(spaces[i]);
-    }
     resp.json({
       playId: data.playId,
-      spaces: spaces,
-    }); //TODO figure out what to respond with - a board? (need to write print board)
+      spaces: game.instance.getInfoToDisplayBoard(),
+    });
   } else {
     resp.status(404); //TODO make an error message to send back
   }

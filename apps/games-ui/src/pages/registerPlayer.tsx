@@ -48,7 +48,7 @@ const RegisterPlayer = () => {
       <h2>Please Register to Play {formik.values.gameId} </h2>
       <form onSubmit={formik.handleSubmit}>
         <TextField
-          id="name"
+          id={'name'}
           name="name"
           placeholder="Player Name"
           onChange={formik.handleChange}
