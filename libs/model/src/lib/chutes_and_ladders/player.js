@@ -18,12 +18,13 @@ export class Player {
     this.name = name;
     this.avatar = undefined;
     this.next = null;
-    this.initialRoll = null;
+    this.initialRoll = [];
   }
 
   initialDiceRoll = (die) => {
-    this.initialRoll = die.roll();
-    return this.initialRoll;
+    const roll = die.roll();
+    this.initialRoll.push(roll);
+    return roll;
   };
 
   selectAvatar(avatar) {
@@ -42,30 +43,60 @@ export class PlayerOrder {
     this.firstPlayer = this.players[0];
   }
 
-  //determines order of players, handling the same number being rolled by multiple players at any stage of the roll-off
-  //and inserting them in appropriate order at the appropriate place
   playerOrder(players) {
-    let order = {}; //stores rolledNum: [] of "player(s)" that rolled it
-    let holdOrder = []; //stores an array of number rolled by multiple players
-    let rolledNum;
     players.forEach((p) => {
-      rolledNum = p.initialRoll;
-      Object.keys(order).includes(rolledNum.toString())
-        ? order[rolledNum].push(p)
-        : (order[rolledNum] = [p]);
-      if (order[rolledNum].length > 1 && !holdOrder.includes(rolledNum)) {
-        holdOrder.push(rolledNum);
-      }
+      let total = this.determineWeight(p.initialRoll);
+      p.initialRoll.length = 0;
+      p.initialRoll.push(total);
     });
-    let subOrder = [];
-    if (holdOrder) {
-      holdOrder.forEach((n) => {
-        subOrder = this.playerOrder(order[n]);
-        order[n] = subOrder;
+    let orderedTotals = [];
+    players.forEach((p) => orderedTotals.push(p.initialRoll));
+    orderedTotals.sort();
+    orderedTotals.reverse();
+    const orderedPlayers = [];
+    for (let t = 0; t < orderedTotals.length; t++) {
+      players.forEach((p) => {
+        if (p.initialRoll === orderedTotals[t]) {
+          orderedPlayers.push(p);
+        }
       });
     }
-    return Object.values(order).reduce((player, cur) => player.concat(cur));
+    return orderedPlayers;
   }
+
+  determineWeight(rolls) {
+    let exp = rolls.length;
+    let total = 0;
+    for (let n = rolls.length - 1; n >= 0; n--) {
+      total = total + rolls[n] * 10 ** exp;
+      --exp;
+    }
+    return total;
+  }
+  //determines order of players, handling the same number being rolled by multiple players at any stage of the roll-off
+  //and inserting them in appropriate order at the appropriate place
+  // playerOrder(players) {
+  //   let order = {}; //stores rolledNum: [] of "player(s)" that rolled it
+  //   let holdOrder = []; //stores an array of numbers rolled by multiple players
+  //   let rolledNum;
+  //   players.forEach((p) => {
+  //     rolledNum = p.initialRoll;
+  //     Object.keys(order).includes(rolledNum.toString())
+  //       ? order[rolledNum].push(p)
+  //       : (order[rolledNum] = [p]);
+  //     if (order[rolledNum].length > 1 && !holdOrder.includes(rolledNum)) {
+  //       holdOrder.push(rolledNum);
+  //     }
+  //   });
+  //   let subOrder = [];
+  //   if (holdOrder) {
+  //     holdOrder.forEach((n) => {
+  //       subOrder = this.playerOrder(order[n]);
+  //       order[n] = subOrder;
+  //     });
+  //   }
+  //   return Object.values(order).reduce((player, cur) => player.concat(cur));
+  // }
 
   linkPlayers() {
     let cur = this.firstPlayer;

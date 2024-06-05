@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { ChutesAndLadders } from './chutes_and_ladders/playable_chutes_and_ladders';
-import { Context } from '@jmcguinness/chain';
+import { Command, Context } from '@jmcguinness/chain';
 
 export interface Rule {
   order: number;
@@ -93,7 +93,7 @@ export interface Game {
   timeCreated: number;
   lastModTime: Date;
   instance: any;
-  actions: Map<string, (() => string) | undefined>; //use a reducer to evaluate string when it comes back
+  action: Command;
 }
 
 export class GameBuilder {
@@ -102,7 +102,6 @@ export class GameBuilder {
     this.playableGame = {
       playId: uuidv4(),
       timeCreated: Math.round(Date.now() / 60000) * 60000,
-      actions: new Map<string, () => string>(), //TODO look at this
     } as Game;
   }
   setGameId(id: string): GameBuilder {
@@ -117,92 +116,12 @@ export class GameBuilder {
     this.playableGame.instance = game;
     return this;
   }
-  addAction(arr: Array<Context>) {
-    //TODO look at this to work with the method
+  addAction(chain: Command) {
+    this.playableGame.action = chain;
   }
-  //Do I need to create an object with many objects or just return one game instance?
   buildPlayableGame(): Game {
     const playableGame = Object.assign({}, this.playableGame);
     this.playableGame = {} as Game;
     return playableGame;
   }
 }
-
-/*export interface Action {
-  title: string;
-  value: () => string; //use a reducer to evaluate string when it comes back
-}
-
-export class ActionBuilder {
-  private action: Action;
-  constructor() {
-    this.action = {} as Action;
-  }
-
-  setTitle(title: string): ActionBuilder {
-    this.action.title = title;
-    return this;
-  }
-  setValue(value: () => string): ActionBuilder {
-    this.action.value = value;
-    return this;
-  }
-  buildAction(): Action {
-    const theAction = Object.assign({}, this.action);
-    this.action = {} as Action;
-    return theAction;
-  }
-}
-
-export interface PlayableGame {
-  gameId: string;
-  playId: string;
-  timeCreated: Date;
-  lastModTime: Date;
-  instance: any;
-  actions: Array<Action>;
-}
-
-export class PlayableGameBuilder {
-  private playableGame: PlayableGame;
-  constructor() {
-    this.playableGame = {
-      actions: new Array<Action>(),
-    } as PlayableGame;
-  }
-  setGameId(id: string): PlayableGameBuilder {
-    this.playableGame.gameId = id;
-    return this;
-  }
-  setPlayId(): PlayableGameBuilder {
-    this.playableGame.playId = uuidv4();
-    return this;
-  }
-  setTimeCreated(): PlayableGameBuilder {
-    this.playableGame.timeCreated = new Date(Date.now());
-    return this;
-  }
-  setLastModTime(time: Date): PlayableGameBuilder {
-    this.playableGame.lastModTime = time;
-    return this;
-  }
-  setInstance(game: object): PlayableGameBuilder {
-    this.playableGame.instance = game;
-    return this;
-  }
-  /*addAction(title: string, value: () => string): PlayableGameBuilder {
-    this.playableGame.actions.push(title, value);
-    return this;
-  }
-  addAction(title: string, value: () => string): PlayableGameBuilder {
-    this.playableGame.actions.push(
-      new ActionBuilder().setTitle(title).setValue(value).buildAction()
-    );
-    return this;
-  }
-  buildPlayableGame(): PlayableGame {
-    const thePlayableGame = Object.assign({}, this.playableGame);
-    this.playableGame = {} as PlayableGame;
-    return thePlayableGame;
-  }
-}*/

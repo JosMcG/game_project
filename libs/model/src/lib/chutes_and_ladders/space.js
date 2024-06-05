@@ -21,7 +21,7 @@ export class SpaceType {
 Object.freeze(SpaceType); //Do not want SpaceType variables to be changed
 
 export class Space {
-  value; //number of space
+  value; //number of space as a string
   type; //specifies if it is a normal, ladder, chute, or winning space
   next; //Space object for the next space when traversing the board
   previous; //Space object for previous space when traversing the board

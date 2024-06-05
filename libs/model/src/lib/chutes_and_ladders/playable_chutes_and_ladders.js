@@ -112,7 +112,8 @@ export const pawn = (color) => {
 
 export class ChutesAndLadders {
   players = []; //an array of player objects
-  availableAvatarColors = ['red', 'yellow', 'green', 'blue', 'purple'];
+  playersToRollForOrder = []; //an array of players rolling for order
+  availableAvatars = ['red', 'yellow', 'green', 'blue', 'purple'];
   firstPlayer = undefined; //for linked list of players
   //order = []; //an array of players in the order they should play -> changed to linking the players in order
   die = new Die(6);
@@ -149,22 +150,22 @@ export class ChutesAndLadders {
   registerPlayer(name) {
     const player = new Player(name);
     this.players.push(player);
+    this.playersToRollForOrder.push(player);
     if (this.players.length == 1) {
-      this.firstPlayer = this.players[0];
+      this.firstPlayer = this.playersToRollForOrder[0];
       this.activePlayer = player;
     }
     // let canAddPlayer = player.length < MAX_PLAYERS ? true : false; //not sure if I will use a bool or just check number
     // return canAddPlayer;
   }
 
-  setAvatar(player, avatar) {
-    if (this.availableAvatarColors.includes(avatar.color)) {
-      avatar.location = this.startSpace;
-      player.selectAvatar(avatar);
-      this.availableAvatarColors = this.availableAvatarColors.filter(
-        (c) => c != avatar.color
+  setAvatar(player, color) {
+    if (this.availableAvatars.includes(color)) {
+      player.avatar = pawn(color);
+      player.avatar.location = this.startSpace;
+      this.availableAvatars = this.availableAvatars.filter(
+        (c) => c != player.avatar.color
       );
-      this.activePlayer = player.next;
     } else console.log('Color not available.'); //TODO add error checking
   }
 
@@ -190,6 +191,7 @@ export class ChutesAndLadders {
 
   //TODO - make sure avatar and player do not cause circular reference!!!
   getInfoToDisplayBoard() {
+    this.boardDisplayInfo = [];
     let cur = this.board.end;
     for (let i = this.board.start.value; i <= this.board.end.value; i++) {
       this.boardDisplayInfo.push({
