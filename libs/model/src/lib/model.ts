@@ -118,6 +118,7 @@ export class GameBuilder {
   }
   addAction(chain: Command) {
     this.playableGame.action = chain;
+    return this;
   }
   buildPlayableGame(): Game {
     const playableGame = Object.assign({}, this.playableGame);

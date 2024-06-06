@@ -293,6 +293,7 @@ export const connectorChain = ChainBuilder.build(true, [
   chooseAvatarChain,
   takeTurnChain,
 ]);
+
 // CommandBuilder.build((context: Context) => {
 //   if(context.get('action') && context.getString('action') === 'registerPlayer') {
 //     const {req, game} = getCargoFromContext(context)
