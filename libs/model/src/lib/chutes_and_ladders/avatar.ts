@@ -12,44 +12,45 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//enum for type of space
-export class Color {
-  static RED = 'red';
-  static YELLOW = 'yellow';
-  static GREEN = 'green';
-  static BLUE = 'blue';
-  static PURPLE = 'purple';
+import { Space } from './space';
+
+export enum Color {
+  RED = 'Red',
+  YELLOW = 'Yellow',
+  GREEN = 'Green',
+  BLUE = 'Blue',
+  PURPLE = 'Purple',
 }
-Object.freeze(Color); //Do not want Color variables to be changed
 
 export class Avatar {
-  location;
+  color;
+  name;
+  location: Space | undefined = undefined;
   active = false; //Do I need this????
 
-  constructor(Color) {
-    this.color = Color;
+  constructor(color: Color) {
+    this.color = color;
     this.name = 'pawn';
   }
 
   //Moves the avatar the given number of spaces.
   //Negative numbers will move the avatar backwards.
-  move(numSpaces) {
+  move(numSpaces: number) {
     let gameOver = false;
     let loc = this.location;
-    let moveDirection = numSpaces > 0 ? 'next' : 'previous';
+    const moveDirection = numSpaces > 0 ? 'next' : 'previous';
     numSpaces = Math.abs(numSpaces); //keep the number of spaces to move positive after this point
-
     //Traverse through spaces according the next pointer
     for (let i = 0; i < numSpaces; ++i) {
       //Check to see if number of moves is passed the start/end spaces
-      if (!loc[moveDirection] && i < numSpaces) {
+      if (loc && !loc[moveDirection] && i < numSpaces) {
         console.log('Overshot the space. Stay put.');
         return gameOver;
       }
-      loc = loc[moveDirection];
+      if (loc) loc = loc[moveDirection];
     }
-    this.location.leave();
-    gameOver = loc.land(this);
+    this.location?.leave();
+    if (loc) gameOver = loc.land(this);
     return gameOver;
   }
 }

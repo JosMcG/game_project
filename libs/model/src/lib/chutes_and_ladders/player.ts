@@ -12,48 +12,57 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 import { Die } from './die';
+import { Avatar } from './avatar';
 
 export class Player {
-  constructor(name) {
+  name;
+  avatar: Avatar | undefined;
+  next: Player | null;
+  initialRoll: Array<number>;
+
+  constructor(name: string) {
     this.name = name;
     this.avatar = undefined;
     this.next = null;
     this.initialRoll = [];
   }
 
-  initialDiceRoll = (die) => {
+  initialDiceRoll = (die: Die) => {
     const roll = die.roll();
     this.initialRoll.push(roll);
     return roll;
   };
 
-  selectAvatar(avatar) {
+  selectAvatar(avatar: Avatar) {
     this.avatar = avatar;
   }
 
   //Returns true if on END space
-  takeTurn = (die) => {
-    return this.avatar.move(die.roll());
-  };
+  // takeTurn = (die: Die) => {
+  //   return this.avatar.move(die.roll());
+  // };
 }
 
 export class PlayerOrder {
-  constructor(players) {
+  players: Player[]; //TODO - change all array typing to this format!!!!
+  firstPlayer: Player;
+
+  constructor(players: Array<Player>) {
     this.players = this.playerOrder(players);
     this.firstPlayer = this.players[0];
   }
 
-  playerOrder(players) {
+  playerOrder(players: Player[]) {
     players.forEach((p) => {
-      let total = this.determineWeight(p.initialRoll);
+      const total = this.determineWeight(p.initialRoll);
       p.initialRoll.length = 0;
       p.initialRoll.push(total);
     });
-    let orderedTotals = [];
+    const orderedTotals = [] as Array<number>[];
     players.forEach((p) => orderedTotals.push(p.initialRoll));
     orderedTotals.sort();
     orderedTotals.reverse();
-    const orderedPlayers = [];
+    const orderedPlayers = [] as Player[];
     for (let t = 0; t < orderedTotals.length; t++) {
       players.forEach((p) => {
         if (p.initialRoll === orderedTotals[t]) {
@@ -64,7 +73,7 @@ export class PlayerOrder {
     return orderedPlayers;
   }
 
-  determineWeight(rolls) {
+  determineWeight(rolls: number[]) {
     let exp = rolls.length;
     let total = 0;
     for (let n = rolls.length - 1; n >= 0; n--) {

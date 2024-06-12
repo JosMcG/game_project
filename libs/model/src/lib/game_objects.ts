@@ -14,13 +14,7 @@
 
 import { LiteGameBuilder, GameBuilder, Game } from './model';
 import { ChutesAndLadders } from './chutes_and_ladders/playable_chutes_and_ladders';
-import {
-  registrationChain,
-  chooseAvatarChain,
-  setOrderChain,
-  takeTurnChain,
-  connectorChain,
-} from './commands';
+import { connectorChain } from './commands';
 
 export const liteChutesAndLadders = new LiteGameBuilder()
   .setId('Chutes-and-Ladders')

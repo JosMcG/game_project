@@ -9,14 +9,14 @@
     "src/**/*.ts",
     "src/lib/model.spec.ts",
     "src/lib/model.ts",
-    "src/lib/chutes_and_ladders/avatar.js",
-    "src/lib/chutes_and_ladders/board.js",
-    "src/lib/chutes_and_ladders/die.js",
-    "src/lib/chutes_and_ladders/functions.js",
-    "src/lib/chutes_and_ladders/playable_chutes_and_ladders.js",
-    "src/lib/chutes_and_ladders/player.js",
-    "src/lib/chutes_and_ladders/space.js",
-    "src/lib/chutes_and_ladders/validators.js"
+    "src/lib/chutes_and_ladders/avatar.ts",
+    "src/lib/chutes_and_ladders/board.ts",
+    "src/lib/chutes_and_ladders/die.ts",
+    "src/lib/chutes_and_ladders/functions.ts",
+    "src/lib/chutes_and_ladders/playable_chutes_and_ladders.ts",
+    "src/lib/chutes_and_ladders/player.ts",
+    "src/lib/chutes_and_ladders/space.ts",
+    "src/lib/chutes_and_ladders/validators.ts"
   ],
   "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"]
 }

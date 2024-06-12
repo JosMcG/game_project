@@ -15,6 +15,7 @@
 import { ChainBuilder, CommandBuilder, Context } from '@jmcguinness/chain';
 import { Player } from './chutes_and_ladders/player';
 import { Game } from './model';
+import { Request } from 'express';
 
 //TODO - need to check player from req with active player!!!
 
@@ -24,14 +25,16 @@ export const showActionCommand = CommandBuilder.build((context: Context) => {
   return true;
 });
 
+//TODO - add everything I need to go between front and back end
 type RequestObject = {
   player: Player;
   color: string;
+  //action: string
 };
 
 export const verifyPlayerCommand = CommandBuilder.build((context) => {
   const req = context.get('req') as Request;
-  const body = req.body as RequestObject | null;
+  const body = req.body as RequestObject | null; //This is giving a build error!!!
   if (body) {
     console.log('trying to verify ' + body.player.name);
     if (body.player === context.get('activePlayer')) {
@@ -61,7 +64,7 @@ export const checkPlayerNumberCommand = CommandBuilder.build(
 
 export const registerCommand = CommandBuilder.build((context: Context) => {
   const req = context.get('req') as Request;
-  const body = req.body as RequestObject | null;
+  const body = req.body as RequestObject | null; //This is giving a build error!!!
   const game = context.get('game') as Game;
   if (body) {
     const player = body.player;
@@ -173,7 +176,7 @@ export const chooseAvatarCommand = CommandBuilder.build((context: Context) => {
   const game = context.get('game') as Game;
   const player = context.get('activePlayer') as Player;
   const req = context.get('req') as Request;
-  const body = req.body as RequestObject | null; //TODO - check type; it wouldn't allow type Avatar to be used
+  const body = req.body as RequestObject | null; //This is giving a build error!!!
   console.log(game.instance.activePlayer.name + ' is choosing an avatar');
   if (body) {
     game.instance.setAvatar(player, body.color);

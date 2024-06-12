@@ -58,6 +58,7 @@ const notQuitePlayableGame = (req: Request, resp: Response) => {
   }
 };
 
+//TODO - for every request create a new context to execute against the static chain
 const registerPlayer = (req: Request, resp: Response) => {
   const data = req.body;
   const playerName = data.playerName;

@@ -11,9 +11,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { SpaceType } from './space';
+import { Space, SpaceType } from './space';
 
-export function validateSpace(space) {
+export function validateSpace(space: Space) {
   return (
     space.type == SpaceType.START ||
     space.type == SpaceType.NORMAL ||
@@ -21,14 +21,14 @@ export function validateSpace(space) {
   );
 }
 
-export function validateStartSpace(space) {
+export function validateStartSpace(space: Space) {
   return space.next != null && space.previous == null;
 }
 
-export function validateNormalSpace(space) {
+export function validateNormalSpace(space: Space) {
   return space.next != null && space.previous != null;
 }
 
-export function validateEndSpace(space) {
+export function validateEndSpace(space: Space) {
   return space.next == null && space.previous != null;
 }

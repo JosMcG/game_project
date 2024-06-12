@@ -35,7 +35,7 @@ import {
   verifyPlayerCommand,
 } from './commands';
 import { Player } from './chutes_and_ladders/player';
-import { Avatar } from './chutes_and_ladders/avatar';
+import { Avatar, Color } from './chutes_and_ladders/avatar';
 
 const testContext = () => {
   const game = playChutesAndLadders;
@@ -44,7 +44,7 @@ const testContext = () => {
   ctx.put('player', p4);
   ctx.put('game', game);
   ctx.put('action', 'register');
-  ctx.put('req', { body: { player: p4, color: 'blue' } });
+  ctx.put('req', { body: { player: p4, color: Color.BLUE } });
   return ctx;
 };
 
@@ -115,10 +115,10 @@ describe('test set order chain', () => {
     let active = game.instance.playersToRollForOrder[0];
     game.instance.activePlayer = active;
     ctx.put('activePlayer', active);
-    ctx.put('req', { body: { player: active, color: 'blue' } });
+    ctx.put('req', { body: { player: active, color: Color.BLUE } });
     while (game.instance.playersToRollForOrder.length >= 1) {
       active = ctx.get('activePlayer');
-      ctx.put('req', { body: { player: active, color: 'blue' } });
+      ctx.put('req', { body: { player: active, color: Color.BLUE } });
       setOrderChain.execute(ctx);
     }
   });
@@ -241,8 +241,8 @@ describe('test single roll command', () => {
 describe('test move command', () => {
   it('should move the avatar a certain number of spaces', () => {
     game.instance.activePlayer = new Player('Scooby');
-    game.instance.activePlayer.avatar = new Avatar('green');
-    game.instance.activePlayer.avatar.location = game.instance.startSpace;
+    game.instance.activePlayer.avatar = new Avatar(Color.GREEN);
+    game.instance.activePlayer.avatar.location = game.instance.board.start;
     ctx.put('rollValue', 5);
     moveCommand.execute(ctx);
     expect(game.instance.activePlayer.avatar.location.value).toBe('6');
@@ -280,11 +280,11 @@ describe('test verify player command', () => {
 describe('test choose avatar command', () => {
   it('should assign chosen avatar to the player', () => {
     game.instance.availableAvatars = [
-      'red',
-      'yellow',
-      'green',
-      'blue',
-      'purple',
+      Color.RED,
+      Color.YELLOW,
+      Color.GREEN,
+      Color.BLUE,
+      Color.PURPLE,
     ];
     const p = new Player('Fred');
     game.instance.players[1] = p;
@@ -294,18 +294,18 @@ describe('test choose avatar command', () => {
     expect(game).toBeTruthy();
     expect(game.instance).toBeTruthy();
     expect(game.instance.players[1].avatar).toBeTruthy();
-    expect(game.instance.players[1].avatar.color).toBe('blue');
+    expect(game.instance.players[1].avatar.color).toBe('Blue');
   });
 });
 
 describe('test choose avatar chain', () => {
   it("should set Wilma's avatar to green", () => {
     game.instance.availableAvatars = [
-      'red',
-      'yellow',
-      'green',
-      'blue',
-      'purple',
+      Color.RED,
+      Color.YELLOW,
+      Color.GREEN,
+      Color.BLUE,
+      Color.PURPLE,
     ];
     game.instance.players[0].next = game.instance.players[1];
     game.instance.players[1].next = game.instance.players[2];
@@ -313,11 +313,11 @@ describe('test choose avatar chain', () => {
     const player = game.instance.players[0];
     ctx.put('activePlayer', player);
     game.instance.activePlayer = player;
-    ctx.put('req', { body: { player: player, color: 'green' } });
+    ctx.put('req', { body: { player: player, color: Color.GREEN } });
     chooseAvatarChain.execute(ctx);
     expect(game.instance).toBeTruthy();
     expect(game.instance.players[0].name).toBe('Wilma');
-    expect(game.instance.players[0].avatar.color).toBe('green');
+    expect(game.instance.players[0].avatar.color).toBe('Green');
     const next = ctx.get('activePlayer') as Player;
     expect(next.name).toBe('Shaggy');
   });
@@ -326,16 +326,16 @@ describe('test choose avatar chain', () => {
 describe('test take turn chain', () => {
   it("should update the location of Wilma's avatar", () => {
     const player = game.instance.players[0];
-    player.avatar = new Avatar('green');
-    player.avatar.location = game.instance.startSpace;
-    game.instance.startSpace.avatars = [player.avatar];
+    player.avatar = new Avatar(Color.GREEN);
+    player.avatar.location = game.instance.board.start;
+    game.instance.board.start.avatars = [player.avatar];
     game.instance.players[0].next = game.instance.players[1];
     game.instance.players[1].next = game.instance.players[2];
     game.instance.players[2].next = game.instance.players[0];
     ctx.put('action', 'takeTurn');
     ctx.put('activePlayer', player);
     game.instance.activePlayer = player;
-    ctx.put('req', { body: { player: player, color: 'green' } });
+    ctx.put('req', { body: { player: player, color: Color.GREEN } });
     takeTurnChain.execute(ctx);
     expect(player.avatar.location.value).not.toBe('1');
   });

@@ -11,6 +11,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+import { Avatar } from './avatar';
+
+//TODO - change this to an enum
 export class SpaceType {
   static START = 1;
   static NORMAL = 2;
@@ -21,19 +24,19 @@ export class SpaceType {
 Object.freeze(SpaceType); //Do not want SpaceType variables to be changed
 
 export class Space {
-  value; //number of space as a string
-  type; //specifies if it is a normal, ladder, chute, or winning space
-  next; //Space object for the next space when traversing the board
-  previous; //Space object for previous space when traversing the board
-  special; //Space object (if using linked list) or number (if using array) for the destination of a type ladder or chute
-  avatars; //array of avatars
+  value: string; //number of space as a string
+  type: SpaceType; //specifies if it is a normal, ladder, chute, or winning space
+  next: Space | undefined; //Space object for the next space when traversing the board
+  previous: Space | undefined; //Space object for previous space when traversing the board
+  special: Space | undefined; //Space object (if using linked list) or number (if using array) for the destination of a type ladder or chute
+  avatars: Avatar[]; //array of avatars
 
-  constructor(value, type) {
+  constructor(value: string, type: SpaceType) {
     this.value = value;
     this.type = type;
-    this.next = null; //This will be a Space object
-    this.previous = null; //This will be a Space object
-    this.special = null; //This will be a Space object
+    this.next = undefined; //This will be a Space object
+    this.previous = undefined; //This will be a Space object
+    this.special = undefined; //This will be a Space object
     this.avatars = [];
   }
 
@@ -41,7 +44,7 @@ export class Space {
     return this.avatars.length > 0;
   }
 
-  addAvatars(a) {
+  addAvatars(a: Avatar) {
     this.avatars.push(a);
   }
 
@@ -50,7 +53,7 @@ export class Space {
   }
 
   //Takes the avatar interacting with the space, and sets its location to the space it occupies
-  land(avatar) {
+  land(avatar: Avatar) {
     let gameOver = false;
     //Check to see if avatar landed on winning space
     if (this.type == SpaceType.END) {
@@ -76,12 +79,12 @@ export class Space {
 
   //Currently, this is a placeholder - needs built out
   //takes an array of validation functions
-  valid(validators) {
-    for (let f = 0; f < validators.length; f++) {
-      if (!validators[f](this)) {
-        return false;
-      }
-    }
-    return true;
-  }
+  // valid(validators) {
+  //   for (let f = 0; f < validators.length; f++) {
+  //     if (!validators[f](this)) {
+  //       return false;
+  //     }
+  //   }
+  //   return true;
+  // }
 }

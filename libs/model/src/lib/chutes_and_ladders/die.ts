@@ -14,7 +14,9 @@
 import { generateRandomNumber } from './functions';
 
 export class SummedRolls {
-  constructor(rolls) {
+  rolls;
+  sum: number;
+  constructor(rolls: Array<number>) {
     this.rolls = [...rolls];
     this.sum = this.rolls.reduce(
       (runningSum, currentRoll) => runningSum + currentRoll
@@ -27,7 +29,7 @@ export class SummedRolls {
   }
 
   // Should return a sum of all the roles as a number value
-  sum() {
+  total() {
     return this.sum;
   }
 }
@@ -35,7 +37,7 @@ export class SummedRolls {
 export class Die {
   #Sides;
 
-  constructor(sides) {
+  constructor(sides: number) {
     this.#Sides = sides;
   }
 
@@ -50,13 +52,13 @@ export class Die {
   }
 
   // Should return an array of numbers
-  rollMultiple(totalRolls) {
-    let rolls = new Array(totalRolls);
-    return rolls.fill(0).map(() => this.roll());
-  }
+  // rollMultiple(totalRolls) {
+  //   const rolls = new Array(totalRolls);
+  //   return rolls.fill(0).map(() => this.roll());
+  // }
 
   // Should return a SummedRoll
-  rollMultipleAndSum(totalRolls) {
-    return new SummedRolls(this.rollMultiple(totalRolls));
-  }
+  // rollMultipleAndSum(totalRolls: Array<number>) {
+  //   return new SummedRolls(this.rollMultiple(totalRolls));
+  // }
 }

@@ -11,24 +11,33 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { SpaceType } from './space';
+import { Space, SpaceType } from './space';
 
 export class Board {
-  constructor(startSpace, numSpaces, specialSpaces, createSpace) {
-    this.end = specialSpaces[numSpaces];
-    this.start = startSpace;
+  end;
+  start;
+  specials;
+  constructor(
+    numSpaces: number,
+    specialSpaces: Map<number, Space>,
+    createSpace: (label: number, type: SpaceType) => Space //NOTE - how to use a function as a parameter in typescript
+  ) {
+    if (specialSpaces.get(numSpaces)) {
+      this.end = specialSpaces.get(numSpaces);
+    }
+    this.start = createSpace(1, SpaceType.START);
     this.specials = specialSpaces;
-    let curSpace = startSpace;
+    let curSpace = this.start;
     let nextSpace;
     for (let n = 2; n <= numSpaces; n++) {
-      if (Object.keys(specialSpaces).includes(n.toString())) {
-        nextSpace = specialSpaces[n.toString()];
+      if (specialSpaces.has(n)) {
+        nextSpace = specialSpaces.get(n);
       } else {
         nextSpace = createSpace(n, SpaceType.NORMAL);
       }
-      curSpace.next = nextSpace;
-      nextSpace.previous = curSpace;
-      curSpace = nextSpace;
+      if (curSpace) curSpace.next = nextSpace;
+      if (nextSpace) nextSpace.previous = curSpace;
+      if (nextSpace) curSpace = nextSpace;
     }
   }
 

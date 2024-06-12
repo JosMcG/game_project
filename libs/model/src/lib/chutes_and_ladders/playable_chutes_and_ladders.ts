@@ -15,30 +15,34 @@ import { generateRandomNumInRange } from './functions';
 import { Space, SpaceType } from './space';
 import { Board } from './board';
 import { Player, PlayerOrder } from './player';
-import { Avatar } from './avatar';
+import { Color, Avatar } from './avatar';
 import { Die } from './die';
 
 const NUM_SPACES = 100;
 const ROW_LENGTH = 10;
 const SPAN = 40;
 const MIN_PLAYERS = 2;
-const MAX_PLAYERS = 4;
+//const MAX_PLAYERS = 4;
 const NUM_CHUTES = 5;
 const NUM_LADDERS = 5;
 
-const createSpace = (label, type) => {
+const createSpace = (label: number, type: SpaceType): Space => {
   return new Space(label.toString(), type);
 };
 
-const isAlreadySpecial = (position, specialArr) => {
-  return specialArr.includes(position.toString());
-};
+// const isAlreadySpecial = (position: number, specialArr: Array<string>) => {
+//   return specialArr.includes(position.toString());
+// };
 
-const determinePosition = (min, max, specialSpaces) => {
-  let position;
+const determinePosition = (
+  min: number,
+  max: number,
+  specialSpaces: Map<number, Space>
+): number => {
+  let position: number;
   do {
     position = generateRandomNumInRange(min, max);
-  } while (isAlreadySpecial(position, Object.keys(specialSpaces)));
+  } while (specialSpaces.has(position));
   //specialSpaces[position] = createSpace(position, type);
 
   return position;
@@ -47,9 +51,12 @@ const determinePosition = (min, max, specialSpaces) => {
 //determine the chute and ladder positions,
 //add the corresponding created spaces to the specialSpaces object,
 //and do the same for the end positions by calling assignSpecialEnd()
-const assignSpecial = (type, specialSpaces) => {
-  let min;
-  let max;
+const assignSpecial = (
+  type: SpaceType,
+  specialSpaces: Map<number, Space>
+): Map<number, Space> => {
+  let min = 0; //let min: number;
+  let max = 0; //let max: number;
   switch (type) {
     case SpaceType.CHUTE:
       min = ROW_LENGTH + 1;
@@ -60,15 +67,19 @@ const assignSpecial = (type, specialSpaces) => {
       max = NUM_SPACES - ROW_LENGTH + 1;
       break;
   }
-  let startPosition = determinePosition(min, max, specialSpaces);
-  specialSpaces[startPosition] = createSpace(startPosition, type);
+  const startPosition: number = determinePosition(min, max, specialSpaces);
+  specialSpaces.set(startPosition, createSpace(startPosition, type));
   specialSpaces = assignSpecialEnd(startPosition, type, specialSpaces);
   return specialSpaces;
 };
 
-const assignSpecialEnd = (startPosition, type, specialSpaces) => {
-  let min;
-  let max;
+const assignSpecialEnd = (
+  startPosition: number,
+  type: SpaceType,
+  specialSpaces: Map<number, Space>
+): Map<number, Space> => {
+  let min = 0; //TODO - Is there a good way to declare a variable without assignment in typescript????
+  let max = 0;
   switch (type) {
     case SpaceType.CHUTE:
       min = startPosition - SPAN > 0 ? startPosition - SPAN : 2;
@@ -82,53 +93,58 @@ const assignSpecialEnd = (startPosition, type, specialSpaces) => {
           : NUM_SPACES - 1; //This does not allow ladder to winning space. Do we include the final space???
       break;
   }
-  let endPosition = determinePosition(
+  const endPosition: number = determinePosition(
     min,
     max,
-    SpaceType.NORMAL,
+    //SpaceType.NORMAL,    why did I have this here????
     specialSpaces
   );
-  specialSpaces[endPosition] = createSpace(endPosition, SpaceType.NORMAL);
-  specialSpaces[startPosition].special = specialSpaces[endPosition];
+  specialSpaces.set(endPosition, createSpace(endPosition, SpaceType.NORMAL));
+  const startSpace = specialSpaces.get(startPosition);
+  if (startSpace) startSpace.special = specialSpaces.get(endPosition); //TODO - why did I have to add undefined to special on space to get this to work???
   return specialSpaces;
 };
 
-//create all chutes, all ladders, and final space and return them in an object
-const createSpecials = (numChutes, numLadders) => {
-  let specialSpaces = new Object();
+//create all chutes, all ladders, and final space and return them in a map
+const createSpecials = (
+  numChutes: number,
+  numLadders: number
+): Map<number, Space> => {
+  let specialSpaces = new Map<number, Space>();
   for (let n = 0; n < numChutes; n++) {
     specialSpaces = assignSpecial(SpaceType.CHUTE, specialSpaces);
   }
   for (let n = 0; n < numLadders; n++) {
     specialSpaces = assignSpecial(SpaceType.LADDER, specialSpaces);
   }
-  specialSpaces[NUM_SPACES] = createSpace(NUM_SPACES, SpaceType.END);
+  specialSpaces.set(NUM_SPACES, createSpace(NUM_SPACES, SpaceType.END));
   return specialSpaces;
 };
 
-export const pawn = (color) => {
+export const pawn = (color: Color): Avatar => {
   return new Avatar(color);
 };
 
 export class ChutesAndLadders {
-  players = []; //an array of player objects
-  playersToRollForOrder = []; //an array of players rolling for order
-  availableAvatars = ['red', 'yellow', 'green', 'blue', 'purple'];
-  firstPlayer = undefined; //for linked list of players
-  //order = []; //an array of players in the order they should play -> changed to linking the players in order
+  players = [] as Array<Player>; //an array of player objects
+  playersToRollForOrder = [] as Array<Player>; //an array of players rolling for order
+  availableAvatars = [
+    Color.RED,
+    Color.YELLOW,
+    Color.GREEN,
+    Color.BLUE,
+    Color.PURPLE,
+  ];
+  firstPlayer: Player | undefined = undefined; //for linked list of players
   die = new Die(6);
-  boardDisplayInfo = [];
-  activePlayer = null;
+  //boardDisplayInfo = [];
+  activePlayer: Player | null = null;
+  specialSpaces;
+  board;
 
   constructor() {
-    this.startSpace = new Space('1', SpaceType.START);
-    this.specialSpaces = createSpecials(NUM_CHUTES, NUM_LADDERS); //put #chutes and ladders here and eliminate the this. values
-    this.board = new Board(
-      this.startSpace,
-      NUM_SPACES,
-      this.specialSpaces,
-      createSpace
-    );
+    this.specialSpaces = createSpecials(NUM_CHUTES, NUM_LADDERS);
+    this.board = new Board(NUM_SPACES, this.specialSpaces, createSpace);
   }
 
   getRowLength() {
@@ -137,17 +153,14 @@ export class ChutesAndLadders {
 
   //Sets up a new board with avatars set on start space
   resetBoard() {
-    this.board = new Board(
-      this.startSpace,
-      NUM_SPACES,
-      this.specialSpaces,
-      createSpace
-    );
-    this.selectedAvatars.forEach((a) => (a.location = this.startSpace));
+    this.board = new Board(NUM_SPACES, this.specialSpaces, createSpace);
+    this.players.forEach((a) => {
+      if (a.avatar) a.avatar.location = this.board.start;
+    });
   }
 
   //Returns true if more players can register
-  registerPlayer(name) {
+  registerPlayer(name: string) {
     const player = new Player(name);
     this.players.push(player);
     this.playersToRollForOrder.push(player);
@@ -159,13 +172,15 @@ export class ChutesAndLadders {
     // return canAddPlayer;
   }
 
-  setAvatar(player, color) {
+  setAvatar(player: Player, color: Color) {
     if (this.availableAvatars.includes(color)) {
       player.avatar = pawn(color);
-      player.avatar.location = this.startSpace;
-      this.availableAvatars = this.availableAvatars.filter(
-        (c) => c != player.avatar.color
-      );
+      console.log(player.name + ' selected ' + player.avatar.color);
+      player.avatar.location = this.board.start;
+      console.log(player.name + ' is ready on ' + player.avatar.location.value);
+      this.availableAvatars = this.availableAvatars.filter((c) => {
+        if (player.avatar) c != player.avatar.color;
+      });
     } else console.log('Color not available.'); //TODO add error checking
   }
 
@@ -173,7 +188,7 @@ export class ChutesAndLadders {
     if (this.players.length < MIN_PLAYERS) {
       console.log('Need more players.'); //redirect to invite players
     }
-    let orderedPlayers = new PlayerOrder(this.players);
+    const orderedPlayers = new PlayerOrder(this.players);
     orderedPlayers.linkPlayers();
     this.players = orderedPlayers.players;
     this.firstPlayer = this.players[0];
@@ -191,22 +206,34 @@ export class ChutesAndLadders {
 
   //TODO - make sure avatar and player do not cause circular reference!!!
   getInfoToDisplayBoard() {
-    this.boardDisplayInfo = [];
-    let cur = this.board.end;
-    for (let i = this.board.start.value; i <= this.board.end.value; i++) {
-      this.boardDisplayInfo.push({
-        spaceNum: cur.value,
-        spaceType: cur.type,
-        special: cur.special ? cur.special.value : 0,
-        avatar: cur.avatars,
-        players: cur.players,
-        activePlayer: this.activePlayer,
-      });
-      if (cur.value > 1) {
+    const boardDisplayInfo = [] as spaceInfo[];
+    type spaceInfo = {
+      spaceNum: string;
+      spaceType: SpaceType;
+      special: string;
+      avatar: Avatar[];
+      activePlayer: Player | null;
+    };
+    let cur;
+    if (this.board.end) cur = this.board.end;
+    let s: spaceInfo;
+    //TODO - I don't like using NUM_SPACES - is there a way to use parseInt(cur.value)???
+    for (let i = parseInt(this.board.start.value); i <= NUM_SPACES; i++) {
+      if (cur) {
+        s = {
+          spaceNum: cur.value,
+          spaceType: cur.type,
+          special: cur.special ? cur.special.value : '0',
+          avatar: cur.avatars,
+          activePlayer: this.activePlayer,
+        };
+        boardDisplayInfo.push(s);
+      }
+      if (cur && parseInt(cur.value) > 1) {
         cur = cur.previous;
       }
     }
-    return this.boardDisplayInfo;
+    return boardDisplayInfo;
   }
 }
 //module.exports = PlayableChutesAndLadders;

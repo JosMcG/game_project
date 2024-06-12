@@ -11,11 +11,11 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-export const generateRandomNumber = (upperBound) => {
+export const generateRandomNumber = (upperBound: number) => {
   return Math.floor(Math.random() * upperBound) + 1;
 };
 
-export const generateRandomNumInRange = (min, max) => {
+export const generateRandomNumInRange = (min: number, max: number) => {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1) + min);
