@@ -14,10 +14,9 @@
 
 import { ChainBuilder, CommandBuilder, Context } from '@jmcguinness/chain';
 import { Player } from './chutes_and_ladders/player';
+import { Color } from './chutes_and_ladders/avatar';
 import { Game } from './model';
 import { Request } from 'express';
-
-//TODO - need to check player from req with active player!!!
 
 export const showActionCommand = CommandBuilder.build((context: Context) => {
   const action = context.get('action') as string;
@@ -28,13 +27,14 @@ export const showActionCommand = CommandBuilder.build((context: Context) => {
 //TODO - add everything I need to go between front and back end
 type RequestObject = {
   player: Player;
-  color: string;
+  playerName: string;
+  color: Color;
   //action: string
 };
 
 export const verifyPlayerCommand = CommandBuilder.build((context) => {
   const req = context.get('req') as Request;
-  const body = req.body as RequestObject | null; //This is giving a build error!!!
+  const body = req.body as RequestObject | null;
   if (body) {
     console.log('trying to verify ' + body.player.name);
     if (body.player === context.get('activePlayer')) {
@@ -64,15 +64,15 @@ export const checkPlayerNumberCommand = CommandBuilder.build(
 
 export const registerCommand = CommandBuilder.build((context: Context) => {
   const req = context.get('req') as Request;
-  const body = req.body as RequestObject | null; //This is giving a build error!!!
+  const body = req.body as RequestObject | null;
   const game = context.get('game') as Game;
   if (body) {
-    const player = body.player;
-    if (game.instance.players.includes(player.name)) {
+    const name = body.playerName;
+    if (game.instance.players.includes(name)) {
       context.put('errorMessage', { message: 'name already in use' });
       return false;
     } else {
-      game.instance.registerPlayer(player.name);
+      game.instance.registerPlayer(name);
     }
   }
   return true;
@@ -89,7 +89,6 @@ export const rollCommand = CommandBuilder.build((context: Context) => {
   return true;
 });
 
-//TODO - do not shift array
 export const initialRollCommand = CommandBuilder.build((context: Context) => {
   const game = context.get('game') as Game;
   console.log(game.instance.activePlayer.name + ' is rolling');
@@ -97,11 +96,9 @@ export const initialRollCommand = CommandBuilder.build((context: Context) => {
   const roll = game.instance.activePlayer.initialDiceRoll(game.instance.die);
   console.log(game.instance.activePlayer.name + ' rolled a ' + roll);
   context.put('rollValue', roll);
-  //game.instance.playersToRollForOrder.shift();
   return true;
 });
 
-//TODO - change how this is handled. Do not want to remove players from array
 export const checkAllInitialRollsCommand = CommandBuilder.build(
   (context: Context) => {
     const game = context.get('game') as Game;
@@ -176,7 +173,7 @@ export const chooseAvatarCommand = CommandBuilder.build((context: Context) => {
   const game = context.get('game') as Game;
   const player = context.get('activePlayer') as Player;
   const req = context.get('req') as Request;
-  const body = req.body as RequestObject | null; //This is giving a build error!!!
+  const body = req.body as RequestObject | null;
   console.log(game.instance.activePlayer.name + ' is choosing an avatar');
   if (body) {
     game.instance.setAvatar(player, body.color);

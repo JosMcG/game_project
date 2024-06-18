@@ -44,7 +44,9 @@ const testContext = () => {
   ctx.put('player', p4);
   ctx.put('game', game);
   ctx.put('action', 'register');
-  ctx.put('req', { body: { player: p4, color: Color.BLUE } });
+  ctx.put('req', {
+    body: { player: p4, playerName: 'Fred', color: Color.BLUE },
+  });
   return ctx;
 };
 
