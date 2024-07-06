@@ -12,12 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//import { Player } from '@jmcguinness/model/src/lib/chutes_and_ladders/player';
 import { useLoaderData } from 'react-router-dom';
 
 const Board = () => {
   const d = useLoaderData() as string;
   const data = JSON.parse(d);
   const spaceInfo = data.spaces;
+  const room = data.room as string;
+  const numPlayers = data.playerNum as string;
+  const players = data.players as Array<string>;
+  console.log('players: ' + players);
   const displaySpaces = [];
   for (let i = 0; i < spaceInfo.length; i = i + 10) {
     if ((Math.floor(spaceInfo[i].spaceNum) / 10) % 2 === 0) {
@@ -56,15 +61,32 @@ const Board = () => {
   ));
 
   return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr',
-        margin: 'auto auto 25px auto',
-        width: '1000px',
-      }}
-    >
-      {showBoard}
+    <div style={{ display: 'grid', gridTemplateColumns: '2fr 8fr' }}>
+      <div style={{ padding: '20px' }}>
+        <h3 style={{ marginBottom: '0px' }}>Game Room: </h3>{' '}
+        <p style={{ marginTop: '0px' }}>{room}</p>
+        <h3 style={{ marginBottom: '0px' }}> Number Playing: </h3>
+        <p style={{ marginTop: '0px' }}>{numPlayers}</p>
+        <h3 style={{ marginBottom: '0px' }}> Players Registered: </h3>
+        {players.length === 0
+          ? null
+          : players.map((p: string) => (
+              <p style={{ marginTop: '0px' }} key={p}>
+                {p}
+              </p>
+            ))}
+      </div>
+      <div
+        style={{
+          boxShadow: '4px 4px 4px grey',
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr',
+          margin: 'auto auto 25px auto',
+          width: '1000px',
+        }}
+      >
+        {showBoard}
+      </div>
     </div>
   );
 };

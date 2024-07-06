@@ -58,9 +58,19 @@ export const liteChutesAndLadders = new LiteGameBuilder()
 //   return { action: action, game: game, req: req, resp: resp } as Payload;
 // };
 
-export const playChutesAndLadders = new GameBuilder()
-  .setGameId('Chutes-and-Ladders')
-  .setLastModTime(new Date(Date.now()))
-  .setInstance(new ChutesAndLadders())
-  .addAction(connectorChain)
-  .buildPlayableGame();
+// export const playChutesAndLadders = new GameBuilder()
+//   .setGameId('Chutes-and-Ladders')
+//   .setLastModTime(new Date(Date.now()))
+//   .setInstance(new ChutesAndLadders())
+//   .addAction(connectorChain)
+//   .buildPlayableGame();
+
+export const playChutesAndLadders = () => {
+  const game = new GameBuilder()
+    .setGameId('Chutes-and-Ladders')
+    .setLastModTime(new Date(Date.now()))
+    .setInstance(new ChutesAndLadders())
+    .addAction(connectorChain)
+    .buildPlayableGame();
+  return game;
+};

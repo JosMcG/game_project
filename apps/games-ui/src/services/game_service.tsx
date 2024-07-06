@@ -25,35 +25,58 @@ export const getGameDetails = async (id: string | undefined) => {
   if (id) {
     const resp = await axios.get(`http://localhost:3333/api/v1/games/${id}`); //tics allow ${} to be interpreted
     return resp.data;
-
-    //return axios.get(`http://localhost:3333/api/v1/games/${id}`).then(resp => resp.data);
   }
   return null;
 };
 
-export const getPlayId = async ({ request }: ActionFunctionArgs) => {
+export const getPlayId = async ({ request, params }: ActionFunctionArgs) => {
+  const id = params.id;
   const body = await request.formData();
-  const id = body.get('id');
+  const action = body.get('action');
+  const room = body.get('gameRoom');
   console.log('ID is ' + id);
-  await axios
-    .post(`http://localhost:3333/api/v1/games/${id}`, {})
-    .then((resp) => resp.data)
-    .then((data) => {
-      console.log('Data: ' + JSON.stringify(data));
-      //put in session storage or local storage - session storage.set state variable
-      localStorage.setItem('actionData', JSON.stringify(data));
-    });
-  return redirect(`/games/${id}/register`);
+  console.log('action is ' + action);
+  //localStorage.clear();
+  if (action === 'start') {
+    await axios
+      .post(`http://localhost:3333/api/v1/games/${id}/${action}`)
+      .then((resp) => resp.data)
+      .then((data) => {
+        console.log('Data: ' + JSON.stringify(data));
+        //put in session storage or local storage - session storage.set state variable
+        localStorage.setItem('actionData', JSON.stringify(data));
+      });
+    return redirect(`/games/${id}/registerStart`);
+  }
+  if (action === 'join') {
+    console.log('handle the join for ' + room);
+    await axios
+      .get(`http://localhost:3333/api/v1/games/${id}/${action}/${room}`)
+      .then((resp) => resp.data)
+      .then((data) => {
+        console.log('Data: ' + JSON.stringify(data));
+        //put in session storage or local storage - session storage.set state variable
+        localStorage.setItem('actionData', JSON.stringify(data));
+      });
+    return redirect(`/games/${id}/registerJoin`);
+  }
 };
 
 export const registerPlayer = async ({ request }: ActionFunctionArgs) => {
   const form = await request.formData(); //contains the values from formik
   const id = form.get('gameId');
+  console.log('sending request for game: ' + form.get('playId'));
+  const name = form.get('name');
+  const gameRoom = form.get('gameRoom');
+  const numPlayers = form.get('numPlayers');
+  //TODO - clean this up - remove redundancy
   await axios
-    .put(`http://localhost:3333/api/v1/games/${id}/register`, {
+    .patch(`http://localhost:3333/api/v1/games/${id}/registerPlayer`, {
       game: id,
       playId: form.get('playId'),
-      playerName: form.get('name'),
+      player: name,
+      room: gameRoom,
+      numPlayers: numPlayers,
     })
     .then((resp) => resp.data)
     .then((data) => {

@@ -18,15 +18,15 @@ import {
   registerPlayer,
 } from '../services/game_service';
 import GameDetails from '../pages/game_details';
-import RegisterPlayer from '../pages/registerPlayer';
 import { themeOptions } from '../theme';
 import Waiting from '../components/waiting';
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 import Board from '../pages/board';
 import { Game } from '@jmcguinness/model';
+import StartGameRegistration from '../pages/startGameRegistration';
+import JoinGameRegistration from '../pages/joinGameRegistration';
 
 const theme = createTheme(themeOptions);
-
 const router = createBrowserRouter([
   {
     path: '/',
@@ -50,8 +50,21 @@ const router = createBrowserRouter([
                 action: getPlayId,
               },
               {
-                path: 'register',
-                Component: RegisterPlayer,
+                path: 'registerStart',
+                Component: StartGameRegistration,
+                action: registerPlayer,
+                loader: () => {
+                  const g = localStorage.getItem('actionData');
+                  const game = JSON.parse(g as string);
+                  if (game === null) {
+                    return redirect('/');
+                  }
+                  return game as Game;
+                },
+              },
+              {
+                path: 'registerJoin',
+                Component: JoinGameRegistration,
                 action: registerPlayer,
                 loader: () => {
                   const g = localStorage.getItem('actionData');

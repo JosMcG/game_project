@@ -12,11 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 import { LiteGame } from '@jmcguinness/model';
-import { Button } from '@mui/material';
+import { Button, TextField } from '@mui/material';
+import { Modal } from '@mui/base/Modal';
+import React from 'react';
 import { Form, useLoaderData } from 'react-router-dom';
+import { ModalContent } from '../components/modal';
 
 function GameDetails() {
+  const [open, setOpen] = React.useState<boolean>(false);
   const game = useLoaderData() as LiteGame;
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   return (
     //TODO - fix
@@ -36,22 +42,80 @@ function GameDetails() {
           <dd>{r.value}</dd>
         </dl>
       ))}
-      <Form method="POST">
+      <div style={{ display: 'flex' }}>
+        <Form method="POST">
+          <Button
+            style={{
+              marginTop: '20px',
+              marginRight: '50px',
+              fontWeight: '550',
+              color: '#2e3030',
+              width: '175px',
+            }}
+            variant="contained"
+            size="large"
+            name="action" //required in order to be a Form
+            value="start" //required in order to be a Form
+            type="submit"
+          >
+            Start a Game
+          </Button>
+        </Form>
         <Button
           style={{
+            width: '175px',
             marginTop: '20px',
             fontWeight: '550',
             color: '#2e3030',
           }}
           variant="contained"
           size="large"
-          value={game.id} //required in order to be a Form
-          name="id" //required in order to be a Form
-          type="submit"
+          type="button"
+          onClick={handleOpen}
         >
-          Start a Game
+          Join a Game
         </Button>
-      </Form>
+        <Modal
+          aria-labelledby="unstyled-modal-title"
+          aria-describedby="unstyled-modal-description"
+          open={open}
+          onClose={handleClose}
+        >
+          <ModalContent
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: 400,
+            }}
+          >
+            <Form method="POST">
+              <TextField
+                name="gameRoom"
+                placeholder="Enter Game Room"
+                required
+                style={{ marginRight: '25px' }}
+              ></TextField>
+              <Button
+                style={{
+                  width: '100px',
+                  margin: '10px auto',
+                  fontWeight: '550',
+                  color: '#2e3030',
+                }}
+                variant="contained"
+                size="small"
+                type="submit"
+                name="action"
+                value="join"
+              >
+                Join
+              </Button>
+            </Form>
+          </ModalContent>
+        </Modal>
+      </div>
     </div>
   );
 }

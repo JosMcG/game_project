@@ -1,6 +1,24 @@
 import { v4 as uuidv4 } from 'uuid';
 import { ChutesAndLadders } from './chutes_and_ladders/playable_chutes_and_ladders';
 import { Command, Context } from '@jmcguinness/chain';
+import { Player } from './chutes_and_ladders/player';
+import { Color } from './chutes_and_ladders/avatar';
+
+//TODO - add everything I need to go between front and back end
+export type RequestMessage = {
+  player: any;
+  numPlayers: number;
+  room: string;
+  color: Color;
+  //game:
+};
+
+export enum ContextVariables { //this is comperable to test case ctx.put
+  GAME,
+  REQUEST,
+  RESPONSE,
+  ACTION,
+}
 
 export interface Rule {
   order: number;
@@ -90,9 +108,11 @@ export class LiteGameBuilder {
 export interface Game {
   gameId: string;
   playId: string;
+  gameRoom: string;
+  playerNum: number;
   timeCreated: number;
   lastModTime: Date;
-  instance: any;
+  instance: any; //TODO - see if type ChutesAndLadders will work
   action: Command;
 }
 
@@ -106,6 +126,14 @@ export class GameBuilder {
   }
   setGameId(id: string): GameBuilder {
     this.playableGame.gameId = id;
+    return this;
+  }
+  setGameRoom(room: string): GameBuilder {
+    this.playableGame.gameRoom = room;
+    return this;
+  }
+  setPlayerNum(num: number): GameBuilder {
+    this.playableGame.playerNum = num;
     return this;
   }
   setLastModTime(time: Date): GameBuilder {

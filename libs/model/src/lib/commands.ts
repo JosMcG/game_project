@@ -14,9 +14,8 @@
 
 import { ChainBuilder, CommandBuilder, Context } from '@jmcguinness/chain';
 import { Player } from './chutes_and_ladders/player';
-import { Color } from './chutes_and_ladders/avatar';
-import { Game } from './model';
-import { Request } from 'express';
+import { ContextVariables, Game, RequestMessage } from './model';
+import { Request, Response } from 'express';
 
 export const showActionCommand = CommandBuilder.build((context: Context) => {
   const action = context.get('action') as string;
@@ -24,21 +23,13 @@ export const showActionCommand = CommandBuilder.build((context: Context) => {
   return true;
 });
 
-//TODO - add everything I need to go between front and back end
-type RequestObject = {
-  player: Player;
-  playerName: string;
-  color: Color;
-  //action: string
-};
-
 export const verifyPlayerCommand = CommandBuilder.build((context) => {
-  const req = context.get('req') as Request;
-  const body = req.body as RequestObject | null;
+  const req = context.get(ContextVariables.REQUEST.toString()) as Request;
+  const body = req.body as RequestMessage | null; //TODO - change this to check for null and respond with 403 or 404
   if (body) {
-    console.log('trying to verify ' + body.player.name);
-    if (body.player === context.get('activePlayer')) {
-      console.log('player verified');
+    //console.log('trying to verify ' + body.player.name);
+    if (body.player.player === context.get('activePlayer')) {
+      //console.log('player verified');
       return true;
     }
   }
@@ -48,14 +39,24 @@ export const verifyPlayerCommand = CommandBuilder.build((context) => {
 
 export const checkPlayerNumberCommand = CommandBuilder.build(
   (context: Context) => {
-    const action = context.get('action');
-    const playerNum = context.get('numPlayers') as number;
-    const game = context.get('game') as Game;
-    if (
-      action === 'registerPlayer' &&
-      game.instance.players.length === playerNum
-    ) {
-      context.put('message', 'All players have registered.');
+    const action = context.get(ContextVariables.ACTION.toString());
+    const req = context.get(ContextVariables.REQUEST.toString()) as Request;
+    const body = req.body as RequestMessage;
+    //console.log('the action is: ' + action);
+    const room = body.room;
+    const game = context.get(ContextVariables.GAME.toString()) as Game;
+    if (game.playerNum) {
+      console.log('number of players set to ' + game.playerNum);
+    }
+    if (game.instance.players.length === 0) {
+      game.playerNum = body.numPlayers;
+      console.log('just set number of players to ' + game.playerNum);
+      game.gameRoom = room;
+      return true;
+    }
+    if (game.instance.players.length == game.playerNum) {
+      console.log('players are full');
+      context.put('errorMessage', 'All players have registered.');
       return false;
     }
     return true;
@@ -63,16 +64,21 @@ export const checkPlayerNumberCommand = CommandBuilder.build(
 );
 
 export const registerCommand = CommandBuilder.build((context: Context) => {
-  const req = context.get('req') as Request;
-  const body = req.body as RequestObject | null;
-  const game = context.get('game') as Game;
+  console.log('In registration command');
+  const req = context.get(ContextVariables.REQUEST.toString()) as Request;
+  const body = req.body as RequestMessage;
+  const game = context.get(ContextVariables.GAME.toString()) as Game;
   if (body) {
-    const name = body.playerName;
+    const name = body.player;
     if (game.instance.players.includes(name)) {
       context.put('errorMessage', { message: 'name already in use' });
       return false;
     } else {
+      //console.log('Registering: ' + name);
       game.instance.registerPlayer(name);
+      // console.log(
+      //   'number of players registered: ' + game.instance.players.length
+      // );
     }
   }
   return true;
@@ -80,39 +86,39 @@ export const registerCommand = CommandBuilder.build((context: Context) => {
 
 export const rollCommand = CommandBuilder.build((context: Context) => {
   const action = context.get('action') as string;
-  const game = context.get('game') as Game;
+  const game = context.get(ContextVariables.GAME.toString()) as Game;
   if (game && action && action === 'takeTurn') {
     context.put('rollValue', game.instance.die.roll());
     const roll = context.get('rollValue');
-    console.log('rolled a ' + roll);
+    //console.log('rolled a ' + roll);
   }
   return true;
 });
 
 export const initialRollCommand = CommandBuilder.build((context: Context) => {
-  const game = context.get('game') as Game;
-  console.log(game.instance.activePlayer.name + ' is rolling');
+  const game = context.get(ContextVariables.GAME.toString()) as Game;
+  //console.log(game.instance.activePlayer.name + ' is rolling');
   //TODO - decide if I want to check action for setOrder!!!
   const roll = game.instance.activePlayer.initialDiceRoll(game.instance.die);
-  console.log(game.instance.activePlayer.name + ' rolled a ' + roll);
+  //console.log(game.instance.activePlayer.name + ' rolled a ' + roll);
   context.put('rollValue', roll);
   return true;
 });
 
 export const checkAllInitialRollsCommand = CommandBuilder.build(
   (context: Context) => {
-    const game = context.get('game') as Game;
+    const game = context.get(ContextVariables.GAME.toString()) as Game;
     const activePlayer = context.get('activePlayer') as Player;
     const lastToRoll =
       game.instance.playersToRollForOrder[
         game.instance.playersToRollForOrder.length - 1
       ];
     if (activePlayer === lastToRoll) {
-      console.log('everyone has rolled');
+      //console.log('everyone has rolled');
       context.put('action', 'checkForRerolls');
       return true;
     } else {
-      console.log('update the player - do not check for rerolls yet');
+      //console.log('update the player - do not check for rerolls yet');
       context.put('action', 'updatePlayer');
     }
     return true;
@@ -121,9 +127,9 @@ export const checkAllInitialRollsCommand = CommandBuilder.build(
 
 export const checkForRerolls = CommandBuilder.build((context: Context) => {
   const action = context.get('action') as string;
-  console.log('action: ' + action);
+  //console.log('action: ' + action);
   if (action === 'checkForRerolls') {
-    const game = context.get('game') as Game;
+    const game = context.get(ContextVariables.GAME.toString()) as Game;
     const unique = new Set();
     const rollAgain = new Set();
     let checkRoll = 0;
@@ -155,11 +161,11 @@ export const checkForRerolls = CommandBuilder.build((context: Context) => {
       unique.add(checkRoll);
     }
     game.instance.playersToRollForOrder = Array.from(rollAgain);
-    console.log(
-      'number of players to roll again: ' +
-        game.instance.playersToRollForOrder.length
-    );
-    console.log('roll for order is now: ' + new Array(...rollAgain).join(' '));
+    // console.log(
+    //   'number of players to roll again: ' +
+    //     game.instance.playersToRollForOrder.length
+    // );
+    //console.log('roll for order is now: ' + new Array(...rollAgain).join(' '));
     if (game.instance.playersToRollForOrder.length >= 2) {
       context.put('action', 'updatePlayerForReroll');
     } else {
@@ -170,16 +176,17 @@ export const checkForRerolls = CommandBuilder.build((context: Context) => {
 });
 
 export const chooseAvatarCommand = CommandBuilder.build((context: Context) => {
-  const game = context.get('game') as Game;
+  const game = context.get(ContextVariables.GAME.toString()) as Game;
   const player = context.get('activePlayer') as Player;
-  const req = context.get('req') as Request;
-  const body = req.body as RequestObject | null;
-  console.log(game.instance.activePlayer.name + ' is choosing an avatar');
+  const req = context.get(ContextVariables.REQUEST.toString()) as Request;
+  //console.log('From request: ' + req.body.color);
+  const body = req.body as RequestMessage | null;
+  //console.log(game.instance.activePlayer.name + ' is choosing an avatar');
   if (body) {
     game.instance.setAvatar(player, body.color);
-    console.log(
-      game.instance.activePlayer.name + ' chose a color: ' + body.color
-    );
+    // console.log(
+    //   game.instance.activePlayer.name + ' chose a color: ' + body.color
+    // );
     return true;
   }
   return false;
@@ -188,14 +195,14 @@ export const chooseAvatarCommand = CommandBuilder.build((context: Context) => {
 export const updateUnorderedActivePlayerCommand = CommandBuilder.build(
   (context: Context) => {
     const action = context.get('action') as string;
-    const game = context.get('game') as Game;
+    const game = context.get(ContextVariables.GAME.toString()) as Game;
     if (action === 'updatePlayer') {
       //update to next player in the array before order has been set
       const index = game.instance.playersToRollForOrder.indexOf(
         context.get('activePlayer') as Player
       );
       const nextPlayer = game.instance.playersToRollForOrder[index + 1];
-      console.log('going to next player, ' + nextPlayer.name + ', to roll');
+      //console.log('going to next player, ' + nextPlayer.name + ', to roll');
       game.instance.activePlayer = nextPlayer;
       context.put('activePlayer', nextPlayer);
     } else if (action === 'updatePlayerForReroll') {
@@ -208,30 +215,30 @@ export const updateUnorderedActivePlayerCommand = CommandBuilder.build(
 
 export const updateOrderedActivePlayerCommand = CommandBuilder.build(
   (context: Context) => {
-    const game = context.get('game') as Game;
+    const game = context.get(ContextVariables.GAME.toString()) as Game;
     //update to next player after order has been set
-    for (let i = 0; i < game.instance.players.length; i++) {
-      console.log('Player: ' + game.instance.players[i].name);
-    }
-    console.log(
-      'active player is ' +
-        game.instance.activePlayer.name +
-        ' and next player is ' +
-        game.instance.activePlayer.next.name
-    );
+    // for (let i = 0; i < game.instance.players.length; i++) {
+    //   console.log('Player: ' + game.instance.players[i].name);
+    // }
+    // console.log(
+    //   'active player is ' +
+    //     game.instance.activePlayer.name +
+    //     ' and next player is ' +
+    //     game.instance.activePlayer.next.name
+    // );
     game.instance.activePlayer = game.instance.activePlayer.next;
     context.put('activePlayer', game.instance.activePlayer);
     const next = context.get('activePlayer') as Player;
-    console.log(next.name + ' is now the active player');
+    //console.log(next.name + ' is now the active player');
     return true;
   }
 );
 
 export const setOrderCommand = CommandBuilder.build((context: Context) => {
   const action = context.get('action') as string;
-  const game = context.get('game') as Game;
+  const game = context.get(ContextVariables.GAME.toString()) as Game;
   if (action === 'setOrder') {
-    console.log('setting order');
+    //console.log('setting order');
     game.instance.setUpGame();
     context.put('activePlayer', game.instance.firstPlayer);
   }
@@ -239,30 +246,40 @@ export const setOrderCommand = CommandBuilder.build((context: Context) => {
 });
 
 export const moveCommand = CommandBuilder.build((context: Context) => {
-  const game = context.get('game') as Game;
+  const game = context.get(ContextVariables.GAME.toString()) as Game;
   const num = context.get('rollValue');
   game.instance.activePlayer.avatar.move(num);
-  console.log(
-    game.instance.activePlayer.name +
-      ' is on space ' +
-      game.instance.activePlayer.avatar.location.value
-  );
+  // console.log(
+  //   game.instance.activePlayer.name +
+  //     ' is on space ' +
+  //     game.instance.activePlayer.avatar.location.value
+  // );
   return true;
 });
 
+//TODO - write response here - write JSON object
 export const paintBoardCommand = CommandBuilder.build((context: Context) => {
-  const game = context.get('game') as Game;
-  context.put('boardInfo', game.instance.getInfoToDisplayBoard());
+  const game = context.get(ContextVariables.GAME.toString()) as Game;
+  const resp = context.get(ContextVariables.RESPONSE.toString()) as Response;
+  const players = game.instance.players.map((p: Player) => p.name);
+  //console.log('looking at registered player: ' + players[0]);
+  resp.json({
+    playId: game.playId,
+    room: game.gameRoom,
+    playerNum: game.playerNum,
+    players: players,
+    spaces: game.instance.getInfoToDisplayBoard(),
+  });
   return true;
 });
 
-export const registrationChain = ChainBuilder.build(true, [
+export const registrationChain = ChainBuilder.build(false, [
   checkPlayerNumberCommand,
   registerCommand,
   paintBoardCommand,
 ]);
 
-export const setOrderChain = ChainBuilder.build(true, [
+export const setOrderChain = ChainBuilder.build(false, [
   verifyPlayerCommand,
   initialRollCommand,
   checkAllInitialRollsCommand,
@@ -272,14 +289,14 @@ export const setOrderChain = ChainBuilder.build(true, [
   paintBoardCommand,
 ]);
 
-export const chooseAvatarChain = ChainBuilder.build(true, [
+export const chooseAvatarChain = ChainBuilder.build(false, [
   verifyPlayerCommand,
   chooseAvatarCommand,
   updateOrderedActivePlayerCommand,
   paintBoardCommand,
 ]);
 
-export const takeTurnChain = ChainBuilder.build(true, [
+export const takeTurnChain = ChainBuilder.build(false, [
   verifyPlayerCommand,
   rollCommand,
   moveCommand,

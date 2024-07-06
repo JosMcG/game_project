@@ -30,7 +30,7 @@ const Header = () => {
     <AppBar
       className="header"
       position="static"
-      style={{ marginBottom: '25px' }}
+      style={{ marginBottom: '50px' }}
     >
       <Toolbar>
         <img
@@ -41,7 +41,7 @@ const Header = () => {
         />
         <Container sx={{ width: '425px', marginLeft: '10px' }}>
           <Paper
-            elevation={3}
+            elevation={2}
             sx={{
               padding: '15px',
               background: '#fc9803',
