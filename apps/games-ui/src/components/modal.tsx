@@ -10,12 +10,14 @@
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
+// limitations under the License.
 
 import React from 'react';
 import Fade from '@mui/material/Fade';
 import { styled, css } from '@mui/system';
+import FocusTrap from '@mui/material/Unstable_TrapFocus';
+import { Portal } from '@mui/material';
 
-// limitations under the License.
 export interface ModalProps {
   children: React.ReactElement;
   closeAfterTransition?: boolean;
@@ -216,3 +218,35 @@ const CustomModalBackdrop = styled(Backdrop)`
   background-color: rgb(0 0 0 / 0.5);
   -webkit-tap-highlight-color: transparent;
 `;
+function useModal(arg0: {
+  rootRef: React.ForwardedRef<HTMLElement>;
+  closeAfterTransition: boolean;
+  disableAutoFocus: boolean;
+  disableEnforceFocus: boolean;
+  disableEscapeKeyDown: boolean;
+  disablePortal: boolean;
+  disableRestoreFocus: boolean;
+  disableScrollLock: boolean;
+  hideBackdrop: boolean;
+  keepMounted: boolean;
+  children: React.ReactElement;
+  container?: Element | (() => Element | null) | null;
+  onClose?: (event: object, reason: 'backdropClick' | 'escapeKeyDown') => void;
+  onTransitionEnter?: () => void;
+  onTransitionExited?: () => void;
+  open: boolean;
+}): {
+  getRootProps: any;
+  getBackdropProps: any;
+  getTransitionProps: any;
+  portalRef: any;
+  isTopModal: any;
+  exited: any;
+  hasTransition: any;
+} {
+  throw new Error('Function not implemented.');
+}
+
+function clsx(classes: { hidden: any }) {
+  throw new Error('Function not implemented.');
+}

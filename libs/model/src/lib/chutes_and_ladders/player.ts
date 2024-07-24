@@ -15,13 +15,15 @@ import { Die } from './die';
 import { Avatar } from './avatar';
 
 export class Player {
-  name;
+  name: string;
+  id: number;
   avatar: Avatar | undefined;
   next: Player | null;
   initialRoll: Array<number>;
 
   constructor(name: string) {
     this.name = name;
+    this.id = Math.floor(1000000000 + Math.random() * 9000000000);
     this.avatar = undefined;
     this.next = null;
     this.initialRoll = [];

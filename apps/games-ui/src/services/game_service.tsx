@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { LiteGame } from '@jmcguinness/model';
+
 import axios from 'axios';
 import { ActionFunctionArgs, redirect } from 'react-router-dom';
 
@@ -58,6 +58,15 @@ export const getPlayId = async ({ request, params }: ActionFunctionArgs) => {
         //put in session storage or local storage - session storage.set state variable
         localStorage.setItem('actionData', JSON.stringify(data));
       });
+    // .catch((error) => {
+    //   if (error.resp?.status === 404) {
+    //     console.error(`Game not found`);
+    //     return undefined;
+    //   }
+
+    //   // Something unexpected
+    //   throw error;
+    // });
     return redirect(`/games/${id}/registerJoin`);
   }
 };

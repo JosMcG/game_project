@@ -18,7 +18,7 @@ import { ContextVariables, Game, RequestMessage } from './model';
 import { Request, Response } from 'express';
 
 export const showActionCommand = CommandBuilder.build((context: Context) => {
-  const action = context.get('action') as string;
+  const action = context.get(ContextVariables.ACTION.toString()) as string;
   console.log('Action: ' + action);
   return true;
 });
@@ -74,18 +74,18 @@ export const registerCommand = CommandBuilder.build((context: Context) => {
       context.put('errorMessage', { message: 'name already in use' });
       return false;
     } else {
-      //console.log('Registering: ' + name);
-      game.instance.registerPlayer(name);
-      // console.log(
-      //   'number of players registered: ' + game.instance.players.length
-      // );
+      const player = game.instance.registerPlayer(name);
+      context.put(ContextVariables.PLAYER.toString(), {
+        playerName: player.name,
+        playerId: player.id,
+      });
     }
   }
   return true;
 });
 
 export const rollCommand = CommandBuilder.build((context: Context) => {
-  const action = context.get('action') as string;
+  const action = context.get(ContextVariables.ACTION.toString()) as string;
   const game = context.get(ContextVariables.GAME.toString()) as Game;
   if (game && action && action === 'takeTurn') {
     context.put('rollValue', game.instance.die.roll());
@@ -115,18 +115,18 @@ export const checkAllInitialRollsCommand = CommandBuilder.build(
       ];
     if (activePlayer === lastToRoll) {
       //console.log('everyone has rolled');
-      context.put('action', 'checkForRerolls');
+      context.put(ContextVariables.ACTION.toString(), 'checkForRerolls');
       return true;
     } else {
       //console.log('update the player - do not check for rerolls yet');
-      context.put('action', 'updatePlayer');
+      context.put(ContextVariables.ACTION.toString(), 'updatePlayer');
     }
     return true;
   }
 );
 
 export const checkForRerolls = CommandBuilder.build((context: Context) => {
-  const action = context.get('action') as string;
+  const action = context.get(ContextVariables.ACTION.toString()) as string;
   //console.log('action: ' + action);
   if (action === 'checkForRerolls') {
     const game = context.get(ContextVariables.GAME.toString()) as Game;
@@ -167,9 +167,9 @@ export const checkForRerolls = CommandBuilder.build((context: Context) => {
     // );
     //console.log('roll for order is now: ' + new Array(...rollAgain).join(' '));
     if (game.instance.playersToRollForOrder.length >= 2) {
-      context.put('action', 'updatePlayerForReroll');
+      context.put(ContextVariables.ACTION.toString(), 'updatePlayerForReroll');
     } else {
-      context.put('action', 'setOrder');
+      context.put(ContextVariables.ACTION.toString(), 'setOrder');
     }
   }
   return true;
@@ -194,7 +194,7 @@ export const chooseAvatarCommand = CommandBuilder.build((context: Context) => {
 
 export const updateUnorderedActivePlayerCommand = CommandBuilder.build(
   (context: Context) => {
-    const action = context.get('action') as string;
+    const action = context.get(ContextVariables.ACTION.toString());
     const game = context.get(ContextVariables.GAME.toString()) as Game;
     if (action === 'updatePlayer') {
       //update to next player in the array before order has been set
@@ -235,7 +235,7 @@ export const updateOrderedActivePlayerCommand = CommandBuilder.build(
 );
 
 export const setOrderCommand = CommandBuilder.build((context: Context) => {
-  const action = context.get('action') as string;
+  const action = context.get(ContextVariables.ACTION.toString()) as string;
   const game = context.get(ContextVariables.GAME.toString()) as Game;
   if (action === 'setOrder') {
     //console.log('setting order');
@@ -261,14 +261,31 @@ export const moveCommand = CommandBuilder.build((context: Context) => {
 export const paintBoardCommand = CommandBuilder.build((context: Context) => {
   const game = context.get(ContextVariables.GAME.toString()) as Game;
   const resp = context.get(ContextVariables.RESPONSE.toString()) as Response;
+  const player = context.get(ContextVariables.PLAYER.toString());
   const players = game.instance.players.map((p: Player) => p.name);
+  let activePlayer = {};
+  let waiting = true;
+  if (game.instance.players.length == game.playerNum) {
+    //TODO - change playerNum to a number
+    waiting = false;
+  }
+  if (game.instance.activePlayer) {
+    activePlayer = {
+      playerName: game.instance.activePlayer.name,
+      playerId: game.instance.activePlayer.id,
+    };
+    console.log(game.instance.activePlayer.name + ' is the active player');
+  }
   //console.log('looking at registered player: ' + players[0]);
   resp.json({
     playId: game.playId,
     room: game.gameRoom,
     playerNum: game.playerNum,
     players: players,
+    player: player, //Do I want to send player back or just active player to check against UI player??
     spaces: game.instance.getInfoToDisplayBoard(),
+    waitingForPlayers: waiting,
+    activePlayer: activePlayer,
   });
   return true;
 });

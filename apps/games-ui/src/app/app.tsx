@@ -25,7 +25,27 @@ import Board from '../pages/board';
 import { Game } from '@jmcguinness/model';
 import StartGameRegistration from '../pages/startGameRegistration';
 import JoinGameRegistration from '../pages/joinGameRegistration';
+import { createContext, useState } from 'react';
 
+//TODO - move the interface and context to different file
+export interface CurrentGame {
+  gameId: string;
+  playerName: string;
+  gameRoom: string;
+  waiting: boolean;
+  readyToPlay: boolean;
+}
+
+export const GameContext = createContext<CurrentGame>(null!);
+
+const ActiveGame = () => {
+  const [getCurrentGame] = useState({} as CurrentGame);
+  return (
+    <GameContext.Provider value={getCurrentGame}>
+      <Outlet />
+    </GameContext.Provider>
+  );
+};
 const theme = createTheme(themeOptions);
 const router = createBrowserRouter([
   {
@@ -42,6 +62,7 @@ const router = createBrowserRouter([
           { index: true, Component: GameList, loader: getGameList },
           {
             path: ':id',
+            Component: ActiveGame,
             children: [
               {
                 index: true,

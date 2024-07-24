@@ -72,11 +72,15 @@ const joiningGame = (req: Request, resp: Response) => {
   console.log('finding game for ' + req.params.room);
   const game = findGameRoom(req.params.room);
   console.log('found game: ' + game);
-  resp.json({
-    gameId: game.gameId,
-    playId: game.playId,
-    gameRoom: game.gameRoom,
-  });
+  if (game) {
+    resp.json({
+      gameId: game.gameId,
+      playId: game.playId,
+      gameRoom: game.gameRoom,
+    });
+  } else {
+    resp.status(404);
+  }
 };
 //TODO - for every request create a new context to execute against the static chain
 const executeAction = (req: Request, resp: Response) => {

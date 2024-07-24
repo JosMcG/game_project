@@ -17,10 +17,13 @@ import { Modal } from '@mui/base/Modal';
 import React from 'react';
 import { Form, useLoaderData } from 'react-router-dom';
 import { ModalContent } from '../components/modal';
+import { GameContext } from '../app/app';
 
 function GameDetails() {
+  //const ctx = React.useContext(GameContext);
   const [open, setOpen] = React.useState<boolean>(false);
   const game = useLoaderData() as LiteGame;
+
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 

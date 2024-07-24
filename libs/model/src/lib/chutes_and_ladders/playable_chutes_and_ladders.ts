@@ -159,7 +159,6 @@ export class ChutesAndLadders {
     });
   }
 
-  //Returns true if more players can register
   registerPlayer(name: string) {
     const player = new Player(name);
     this.players.push(player);
@@ -168,6 +167,7 @@ export class ChutesAndLadders {
       this.firstPlayer = this.playersToRollForOrder[0];
       this.activePlayer = player;
     }
+    return player;
     // let canAddPlayer = player.length < MAX_PLAYERS ? true : false; //not sure if I will use a bool or just check number
     // return canAddPlayer;
   }
@@ -212,8 +212,8 @@ export class ChutesAndLadders {
       spaceType: SpaceType;
       special: string;
       avatar: Avatar[];
-      activePlayer: Player | null;
     };
+
     let cur;
     if (this.board.end) cur = this.board.end;
     let s: spaceInfo;
@@ -225,7 +225,6 @@ export class ChutesAndLadders {
           spaceType: cur.type,
           special: cur.special ? cur.special.value : '0',
           avatar: cur.avatars,
-          activePlayer: this.activePlayer,
         };
         boardDisplayInfo.push(s);
       }

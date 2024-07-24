@@ -18,6 +18,7 @@ export enum ContextVariables { //this is comperable to test case ctx.put
   REQUEST,
   RESPONSE,
   ACTION,
+  PLAYER,
 }
 
 export interface Rule {

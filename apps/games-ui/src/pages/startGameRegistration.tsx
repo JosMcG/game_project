@@ -30,6 +30,8 @@ import { Button, Container, Paper, TextField } from '@mui/material';
 import { useFormik } from 'formik';
 import { useLoaderData, useLocation, useSubmit } from 'react-router-dom';
 import * as Yup from 'yup';
+import { GameContext } from '../app/app';
+import React from 'react';
 
 type RegisterForm = {
   name: string;
@@ -40,6 +42,8 @@ type RegisterForm = {
 };
 
 const StartGameRegistration = () => {
+  //const ctx = React.useContext(GameContext);
+
   const loc = useLocation();
   const submit = useSubmit();
   const data = useLoaderData() as Game;

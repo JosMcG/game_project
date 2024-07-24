@@ -14,15 +14,24 @@
 
 //import { Player } from '@jmcguinness/model/src/lib/chutes_and_ladders/player';
 import { useLoaderData } from 'react-router-dom';
+import { GameContext } from '../app/app';
+import React from 'react';
+import { Button } from '@mui/material';
 
 const Board = () => {
+  const ctx = React.useContext(GameContext);
   const d = useLoaderData() as string;
   const data = JSON.parse(d);
   const spaceInfo = data.spaces;
-  const room = data.room as string;
+  ctx.gameRoom = data.room as string;
   const numPlayers = data.playerNum as string;
   const players = data.players as Array<string>;
-  console.log('players: ' + players);
+  const waiting = data.waitingForPlayers as boolean;
+  //ctx.waiting = waiting;
+  const activePlayer = data.activePlayer;
+  activePlayer
+    ? console.log('active player is ' + activePlayer.playerName)
+    : console.log('no active player');
   const displaySpaces = [];
   for (let i = 0; i < spaceInfo.length; i = i + 10) {
     if ((Math.floor(spaceInfo[i].spaceNum) / 10) % 2 === 0) {
@@ -64,17 +73,42 @@ const Board = () => {
     <div style={{ display: 'grid', gridTemplateColumns: '2fr 8fr' }}>
       <div style={{ padding: '20px' }}>
         <h3 style={{ marginBottom: '0px' }}>Game Room: </h3>{' '}
-        <p style={{ marginTop: '0px' }}>{room}</p>
+        <p style={{ marginTop: '0px' }}>{ctx.gameRoom}</p>
         <h3 style={{ marginBottom: '0px' }}> Number Playing: </h3>
         <p style={{ marginTop: '0px' }}>{numPlayers}</p>
         <h3 style={{ marginBottom: '0px' }}> Players Registered: </h3>
         {players.length === 0
           ? null
           : players.map((p: string) => (
-              <p style={{ marginTop: '0px' }} key={p}>
+              <p style={{ marginTop: '0px', marginBottom: '0px' }} key={p}>
                 {p}
               </p>
             ))}
+        {waiting ? (
+          <p style={{ fontWeight: 'bold', color: '#e33020' }}>
+            Waiting for More Players
+          </p>
+        ) : null}
+        {!waiting ? (
+          <>
+            <h3 style={{ marginBottom: '0px' }}>Active Player:</h3>
+            <p style={{ marginTop: '0px' }}>{activePlayer.playerName}</p>
+            <Button
+              style={{
+                fontWeight: '550',
+                color: '#2e3030',
+                width: '100px',
+              }}
+              variant="contained"
+              size="large"
+              name="action" //required in order to be a Form
+              value="start" //required in order to be a Form
+              type="submit"
+            >
+              Roll
+            </Button>
+          </>
+        ) : null}
       </div>
       <div
         style={{
@@ -87,6 +121,7 @@ const Board = () => {
       >
         {showBoard}
       </div>
+      {ctx.gameId}
     </div>
   );
 };
