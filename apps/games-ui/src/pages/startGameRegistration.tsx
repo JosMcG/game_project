@@ -42,7 +42,7 @@ type RegisterForm = {
 };
 
 const StartGameRegistration = () => {
-  //const ctx = React.useContext(GameContext);
+  const ctx = React.useContext(GameContext);
 
   const loc = useLocation();
   const submit = useSubmit();
@@ -69,6 +69,8 @@ const StartGameRegistration = () => {
         .required('Required'),
     }),
     onSubmit: async (values) => {
+      ctx.playerName = values.name;
+      ctx.gameRoom = values.gameRoom;
       submit(values, { method: 'post' });
     },
   });

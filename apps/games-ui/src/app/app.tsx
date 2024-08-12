@@ -31,6 +31,7 @@ import { createContext, useState } from 'react';
 export interface CurrentGame {
   gameId: string;
   playerName: string;
+  playerId: number;
   gameRoom: string;
   waiting: boolean;
   readyToPlay: boolean;

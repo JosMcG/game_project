@@ -42,8 +42,10 @@
 import { Game } from '@jmcguinness/model';
 import { Button, Container, Paper, TextField } from '@mui/material';
 import { useFormik } from 'formik';
+import React from 'react';
 import { useLoaderData, useSubmit } from 'react-router-dom';
 import * as Yup from 'yup';
+import { GameContext } from '../app/app';
 
 type JoinRegisterForm = {
   name: string;
@@ -55,6 +57,7 @@ type JoinRegisterForm = {
 const JoinGameRegistration = () => {
   const submit = useSubmit();
   const data = useLoaderData() as Game;
+  const ctx = React.useContext(GameContext);
   const formik = useFormik<JoinRegisterForm>({
     initialValues: {
       name: '',
@@ -69,6 +72,7 @@ const JoinGameRegistration = () => {
         .required('Required'),
     }),
     onSubmit: async (values) => {
+      ctx.playerName = values.name;
       submit(values, { method: 'post' });
     },
   });

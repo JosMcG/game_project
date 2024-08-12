@@ -261,14 +261,18 @@ export const moveCommand = CommandBuilder.build((context: Context) => {
 export const paintBoardCommand = CommandBuilder.build((context: Context) => {
   const game = context.get(ContextVariables.GAME.toString()) as Game;
   const resp = context.get(ContextVariables.RESPONSE.toString()) as Response;
-  const player = context.get(ContextVariables.PLAYER.toString());
+  const player = context.get(ContextVariables.PLAYER.toString())
+    ? context.get(ContextVariables.PLAYER.toString())
+    : null;
   const players = game.instance.players.map((p: Player) => p.name);
   let activePlayer = {};
   let waiting = true;
+  //let ready = false;
   if (game.instance.players.length == game.playerNum) {
     //TODO - change playerNum to a number
     waiting = false;
   }
+
   if (game.instance.activePlayer) {
     activePlayer = {
       playerName: game.instance.activePlayer.name,
@@ -285,6 +289,7 @@ export const paintBoardCommand = CommandBuilder.build((context: Context) => {
     player: player, //Do I want to send player back or just active player to check against UI player??
     spaces: game.instance.getInfoToDisplayBoard(),
     waitingForPlayers: waiting,
+    //readyToPlay: ready,
     activePlayer: activePlayer,
   });
   return true;

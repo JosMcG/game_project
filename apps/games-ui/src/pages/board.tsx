@@ -17,6 +17,7 @@ import { useLoaderData } from 'react-router-dom';
 import { GameContext } from '../app/app';
 import React from 'react';
 import { Button } from '@mui/material';
+import axios from 'axios';
 
 const Board = () => {
   const ctx = React.useContext(GameContext);
@@ -27,7 +28,10 @@ const Board = () => {
   const numPlayers = data.playerNum as string;
   const players = data.players as Array<string>;
   const waiting = data.waitingForPlayers as boolean;
-  //ctx.waiting = waiting;
+  //add player to context if one was returned from server
+  if (data.player) ctx.playerId = data.player.id;
+  //const readyToPlay = data.readyToPlay as boolean;
+  ctx.waiting = waiting;
   const activePlayer = data.activePlayer;
   activePlayer
     ? console.log('active player is ' + activePlayer.playerName)
@@ -68,6 +72,16 @@ const Board = () => {
         : null}
     </div>
   ));
+
+  //TODO - continue this - check player to see if the name is enough
+  // const handleClick = () => {
+  //   axios.patch(`http://localhost:3333/api/v1/games/${data.gameId}/roll`, {
+  //     game: data.gameId,
+  //     playId: data.playId,
+  //     playerId: ctx.playerId,
+  //     room: data.gameRoom,
+  //   });
+  // };
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '2fr 8fr' }}>
