@@ -6,6 +6,7 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import artists from './routes/artists';
+import albums from './routes/albums';
 
 const corsOptions = {
   origin: 'http://localhost:4200',
@@ -20,6 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (req: Request, resp: Response) => resp.status(200).send());
 app.use('/api', artists);
+app.use('/api', albums);
 
 app.get('/health', (req: Request, resp: Response) => {
   resp.status(200).send('Ok');

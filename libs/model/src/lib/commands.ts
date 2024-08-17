@@ -43,7 +43,6 @@ export const checkPlayerNumberCommand = CommandBuilder.build(
     const req = context.get(ContextVariables.REQUEST.toString()) as Request;
     const body = req.body as RequestMessage;
     //console.log('the action is: ' + action);
-    const room = body.room;
     const game = context.get(ContextVariables.GAME.toString()) as Game;
     if (game.playerNum) {
       console.log('number of players set to ' + game.playerNum);
@@ -51,7 +50,7 @@ export const checkPlayerNumberCommand = CommandBuilder.build(
     if (game.instance.players.length === 0) {
       game.playerNum = body.numPlayers;
       console.log('just set number of players to ' + game.playerNum);
-      game.gameRoom = room;
+      game.gameRoom = body.room;
       return true;
     }
     if (game.instance.players.length == game.playerNum) {
@@ -262,9 +261,10 @@ export const paintBoardCommand = CommandBuilder.build((context: Context) => {
   const game = context.get(ContextVariables.GAME.toString()) as Game;
   const resp = context.get(ContextVariables.RESPONSE.toString()) as Response;
   const player = context.get(ContextVariables.PLAYER.toString())
-    ? context.get(ContextVariables.PLAYER.toString())
+    ? (context.get(ContextVariables.PLAYER.toString()) as Player)
     : null;
   const players = game.instance.players.map((p: Player) => p.name);
+  const roll = context.get('rollValue');
   let activePlayer = {};
   let waiting = true;
   //let ready = false;
@@ -283,17 +283,20 @@ export const paintBoardCommand = CommandBuilder.build((context: Context) => {
   //console.log('looking at registered player: ' + players[0]);
   resp.json({
     playId: game.playId,
+    gameId: game.gameId,
     room: game.gameRoom,
     playerNum: game.playerNum,
     players: players,
     player: player, //Do I want to send player back or just active player to check against UI player??
     spaces: game.instance.getInfoToDisplayBoard(),
     waitingForPlayers: waiting,
-    //readyToPlay: ready,
     activePlayer: activePlayer,
+    roll: roll,
   });
   return true;
 });
+
+export const refreshChain = ChainBuilder.build(false, [paintBoardCommand]);
 
 export const registrationChain = ChainBuilder.build(false, [
   checkPlayerNumberCommand,

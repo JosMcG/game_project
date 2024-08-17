@@ -42,7 +42,7 @@ type RegisterForm = {
 };
 
 const StartGameRegistration = () => {
-  const ctx = React.useContext(GameContext);
+  //const ctx = React.useContext(GameContext);
 
   const loc = useLocation();
   const submit = useSubmit();
@@ -69,8 +69,8 @@ const StartGameRegistration = () => {
         .required('Required'),
     }),
     onSubmit: async (values) => {
-      ctx.playerName = values.name;
-      ctx.gameRoom = values.gameRoom;
+      //ctx.playerName = values.name;  - I don't think this is where I should set the context values
+      //ctx.gameRoom = values.gameRoom;  - should get verified by the COR first and set in board
       submit(values, { method: 'post' });
     },
   });

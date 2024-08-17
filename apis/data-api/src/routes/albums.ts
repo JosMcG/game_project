@@ -13,19 +13,19 @@
 // limitations under the License.
 
 import { Request, Response, Router } from 'express';
-import { artist } from '@prisma/client';
+import { album } from '@prisma/client';
 import {
-  createArtist,
-  deleteArtist,
-  findAllArtists,
-  findArtist,
-  updateArtist,
-} from '../service/artist_crud';
+  createAlbum,
+  deleteAlbum,
+  findAllAlbums,
+  findAlbum,
+  updateAlbum,
+} from '../service/album_crud';
 
 const router = Router(); //see in multiple places - all get back the only router object
 
-router.get('/artists', (req: Request, resp: Response) => {
-  findAllArtists()
+router.get('/albums', (req: Request, resp: Response) => {
+  findAllAlbums()
     .then((val) => resp.status(200).send(val))
     .catch((err) => resp.status(404).send({ error: err }));
 });
@@ -39,9 +39,9 @@ router.get('/artists', (req: Request, resp: Response) => {
 //   }
 // });
 
-router.get('/artists/:id', (req: Request, resp: Response) => {
+router.get('/albums/:id', (req: Request, resp: Response) => {
   const selectedId = parseInt(req.params.id);
-  findArtist(selectedId)
+  findAlbum(selectedId)
     .then((val) => resp.status(200).send(val))
     .catch((err) => resp.status(404).send({ error: err }));
 });
@@ -58,9 +58,10 @@ router.get('/artists/:id', (req: Request, resp: Response) => {
 
 //example of using .then rather than async/await - does same thing;
 //different way to write functionally similar code
-router.put('/artists/:id', (req: Request, resp: Response) => {
-  const artist = req.body as artist;
-  updateArtist(parseInt(req.params.id), artist)
+router.put('/album/:id', (req: Request, resp: Response) => {
+  const id = parseInt(req.params.id);
+  const album = req.body as album;
+  updateAlbum(id, album)
     .then((val) => {
       resp.status(200).send(val);
     })
@@ -69,9 +70,10 @@ router.put('/artists/:id', (req: Request, resp: Response) => {
     });
 });
 
-router.post('/artists', (req: Request, resp: Response) => {
-  const artist = req.body as artist; //generated objects with Prisma
-  createArtist(artist.name)
+router.post('/albums', (req: Request, resp: Response) => {
+  const album = req.body as album; //generated objects with Prisma
+  const artistName = req.body as number;
+  createAlbum(album.title, artistName)
     .then((val) => {
       resp.status(200).send(val);
     })
@@ -82,7 +84,7 @@ router.post('/artists', (req: Request, resp: Response) => {
 
 router.delete('/artists/:id', (req: Request, resp: Response) => {
   const selectedId = parseInt(req.params.id);
-  deleteArtist(selectedId)
+  deleteAlbum(selectedId)
     .then((val) => {
       resp.status(200).send(val);
     })

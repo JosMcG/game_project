@@ -30,6 +30,15 @@ export const findArtist = (id: number) => {
   });
 };
 
+//TODO - think about this to see if it is what I really want
+export const findArtistId = (artistName: string) => {
+  return prisma.artist.findFirst({
+    where: {
+      name: artistName,
+    },
+  });
+};
+
 export const updateArtist = (id: number, artist: artist) => {
   if (id === artist.artist_id) {
     return prisma.artist.update({
@@ -46,7 +55,6 @@ export const updateArtist = (id: number, artist: artist) => {
 export const createArtist = (artistName: string) => {
   return prisma.artist.create({
     data: {
-      //artist_id: undefined, //This should auto-generate - how to get rid of this? Prisma.artistCreateInput
       name: artistName,
     },
   });

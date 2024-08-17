@@ -75,17 +75,13 @@ export const registerPlayer = async ({ request }: ActionFunctionArgs) => {
   const form = await request.formData(); //contains the values from formik
   const id = form.get('gameId');
   console.log('sending request for game: ' + form.get('playId'));
-  const name = form.get('name');
-  const gameRoom = form.get('gameRoom');
-  const numPlayers = form.get('numPlayers');
-  //TODO - clean this up - remove redundancy
   await axios
     .patch(`http://localhost:3333/api/v1/games/${id}/registerPlayer`, {
       game: id,
       playId: form.get('playId'),
-      player: name,
-      room: gameRoom,
-      numPlayers: numPlayers,
+      player: form.get('name'),
+      room: form.get('gameRoom'),
+      numPlayers: form.get('numPlayers'),
     })
     .then((resp) => resp.data)
     .then((data) => {

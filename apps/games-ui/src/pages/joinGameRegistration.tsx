@@ -57,7 +57,7 @@ type JoinRegisterForm = {
 const JoinGameRegistration = () => {
   const submit = useSubmit();
   const data = useLoaderData() as Game;
-  const ctx = React.useContext(GameContext);
+  //const ctx = React.useContext(GameContext);
   const formik = useFormik<JoinRegisterForm>({
     initialValues: {
       name: '',
@@ -72,7 +72,7 @@ const JoinGameRegistration = () => {
         .required('Required'),
     }),
     onSubmit: async (values) => {
-      ctx.playerName = values.name;
+      //ctx.playerName = values.name; - I don't think this is where I should set the context
       submit(values, { method: 'post' });
     },
   });

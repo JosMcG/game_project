@@ -35,20 +35,21 @@ export class SummedRolls {
 }
 
 export class Die {
-  #Sides;
+  sides: number;
+  
 
   constructor(sides: number) {
-    this.#Sides = sides;
+    this.sides = sides;
   }
 
   // Should return a number of sides
-  get sides() {
-    return this.#Sides;
+  get numSides() {
+    return this.sides;
   }
 
   // Should return a random number between one and the total sides
   roll() {
-    return generateRandomNumber(this.#Sides);
+    return generateRandomNumber(this.sides);
   }
 
   // Should return an array of numbers

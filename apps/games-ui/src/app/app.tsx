@@ -29,6 +29,7 @@ import { createContext, useState } from 'react';
 
 //TODO - move the interface and context to different file
 export interface CurrentGame {
+  game: string;
   gameId: string;
   playerName: string;
   playerId: number;
